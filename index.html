@@ -188,12 +188,18 @@
     let selectedPhoto = null;
     let cart = [];
 
-    let photos = [
+    // Load photos from localStorage or use defaults
+    let photos = JSON.parse(localStorage.getItem('grumpyiyer_photos')) || [
       { id: 1, title: "Cheetah on the Serengeti Plains", category: "Wildlife", price: 150, url: "https://images.unsplash.com/photo-1551969014-7d2c4cddf0b6?w=1200", hookLine: "In stillness, the hunter waits", philosophy: "The cheetah embodies witness consciousness - alert, present, yet completely at peace.", likes: 24 },
       { id: 2, title: "Golden Hour Savanna", category: "Landscape", price: 120, url: "https://images.unsplash.com/photo-1516426122078-c23e76319801?w=1200", hookLine: "Where earth meets infinity", philosophy: "The vast savanna reveals the illusion of separation.", likes: 18 }
     ];
 
     let currentCategory = 'All';
+
+    // Save photos to localStorage
+    function savePhotosToStorage() {
+      localStorage.setItem('grumpyiyer_photos', JSON.stringify(photos));
+    }
 
     // Initialize
     function init() {
@@ -345,9 +351,11 @@
         photos.push(photo);
       }
 
+      savePhotosToStorage();
       closeFormModal();
       renderGallery();
       if (isAdmin) renderAdminGallery();
+      alert('Photo saved successfully!');
     }
 
     function editPhoto(id) {
@@ -357,6 +365,7 @@
     function deletePhoto(id) {
       if (confirm('Delete this photo?')) {
         photos = photos.filter(p => p.id !== id);
+        savePhotosToStorage();
         renderAdminGallery();
         renderGallery();
       }
