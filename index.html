@@ -3,295 +3,425 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Grumpy Iyer - Photography & Philosophy</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+  <title>Grumpy Iyer - Photography</title>
   <style>
-    .font-serif { font-family: 'Lora', serif; }
-    body { margin: 0; padding: 0; }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #fafaf9; }
+    .header { background: white; border-bottom: 1px solid #e7e5e4; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 10; }
+    .logo { display: flex; align-items: center; gap: 1rem; }
+    .logo-circle { width: 40px; height: 40px; background: #78350f; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-family: serif; }
+    .logo-text h1 { font-size: 1.5rem; font-family: serif; color: #1c1917; }
+    .logo-text p { font-size: 0.75rem; color: #78716c; }
+    .nav { display: flex; gap: 1.5rem; align-items: center; }
+    .nav button { background: none; border: none; cursor: pointer; color: #78716c; font-size: 1rem; padding: 0.5rem 1rem; }
+    .nav button:hover { color: #78350f; }
+    .nav button.active { color: #78350f; font-weight: 600; }
+    .container { max-width: 1200px; margin: 0 auto; padding: 2rem; }
+    .filter-bar { display: flex; gap: 0.5rem; margin-bottom: 2rem; }
+    .filter-btn { padding: 0.5rem 1.5rem; border: 1px solid #e7e5e4; background: white; border-radius: 2rem; cursor: pointer; color: #57534e; font-size: 0.875rem; }
+    .filter-btn:hover { background: #f5f5f4; }
+    .filter-btn.active { background: #78350f; color: white; border-color: #78350f; }
+    .gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 2rem; }
+    .photo-card { background: white; box-shadow: 0 1px 3px rgba(0,0,0,0.1); overflow: hidden; cursor: pointer; transition: box-shadow 0.3s; }
+    .photo-card:hover { box-shadow: 0 10px 25px rgba(0,0,0,0.15); }
+    .photo-card img { width: 100%; height: 250px; object-fit: cover; }
+    .photo-info { padding: 1rem; }
+    .photo-info h3 { font-family: serif; font-size: 1.125rem; margin-bottom: 0.5rem; color: #1c1917; }
+    .photo-meta { display: flex; justify-content: space-between; font-size: 0.875rem; }
+    .photo-meta .category { color: #78716c; }
+    .photo-meta .price { color: #78350f; font-weight: 600; }
+    .modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.95); z-index: 100; align-items: center; justify-content: center; }
+    .modal.active { display: flex; }
+    .modal-content { background: white; max-width: 900px; max-height: 90vh; overflow-y: auto; position: relative; }
+    .modal-content img { width: 100%; max-height: 60vh; object-fit: contain; }
+    .modal-info { padding: 2rem; }
+    .modal-info .hook { font-style: italic; color: #78350f; font-size: 1.125rem; margin-bottom: 1rem; }
+    .modal-info h2 { font-family: serif; font-size: 2rem; margin-bottom: 1rem; }
+    .modal-info .philosophy { color: #57534e; line-height: 1.6; margin-bottom: 1.5rem; }
+    .modal-footer { border-top: 1px solid #e7e5e4; padding-top: 1.5rem; display: flex; justify-content: space-between; align-items: center; }
+    .modal-footer .price { font-family: serif; font-size: 1.5rem; color: #78350f; }
+    .btn { padding: 0.75rem 1.5rem; border: none; border-radius: 0.5rem; cursor: pointer; font-size: 1rem; font-weight: 500; }
+    .btn-primary { background: #78350f; color: white; }
+    .btn-primary:hover { background: #92400e; }
+    .close-btn { position: absolute; top: 1rem; right: 1rem; background: white; border: none; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; font-size: 1.5rem; }
+    .admin-panel { background: white; padding: 2rem; border-radius: 0.5rem; margin-top: 2rem; }
+    .admin-header { display: flex; justify-content: space-between; margin-bottom: 2rem; }
+    .admin-header h2 { font-family: serif; font-size: 2rem; }
+    .admin-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 1rem; }
+    .admin-card { background: #fafaf9; padding: 1rem; border-radius: 0.5rem; }
+    .admin-card img { width: 100%; height: 150px; object-fit: cover; border-radius: 0.5rem; margin-bottom: 0.5rem; }
+    .admin-actions { display: flex; gap: 0.5rem; margin-top: 0.5rem; }
+    .btn-small { padding: 0.5rem 1rem; font-size: 0.875rem; }
+    .btn-edit { background: #2563eb; color: white; }
+    .btn-delete { background: #dc2626; color: white; }
+    .form-modal { padding: 2rem; max-width: 600px; }
+    .form-group { margin-bottom: 1rem; }
+    .form-group label { display: block; margin-bottom: 0.5rem; font-weight: 500; }
+    .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 0.5rem; border: 1px solid #e7e5e4; border-radius: 0.5rem; font-size: 1rem; }
+    .form-group textarea { resize: vertical; }
+    .preview-img { width: 100%; height: 200px; object-fit: cover; border-radius: 0.5rem; margin-top: 0.5rem; }
+    .login-modal { padding: 2rem; max-width: 400px; text-align: center; }
+    .login-modal h2 { font-family: serif; margin-bottom: 1.5rem; }
+    .login-modal input { width: 100%; padding: 0.75rem; border: 1px solid #e7e5e4; border-radius: 0.5rem; margin-bottom: 1rem; }
   </style>
 </head>
 <body>
-  <div id="root">
-    <div style="display: flex; align-items: center; justify-content: center; min-height: 100vh; background: #fafaf9;">
-      <p style="color: #78350f; font-size: 18px;">Loading...</p>
+  <!-- Header -->
+  <div class="header">
+    <div class="logo">
+      <div class="logo-circle">GI</div>
+      <div class="logo-text">
+        <h1>Grumpy Iyer</h1>
+        <p>Photography & Philosophy</p>
+      </div>
+    </div>
+    <div class="nav">
+      <button id="galleryBtn" class="active">Gallery</button>
+      <button id="adminBtn" style="display:none;">Admin</button>
+      <button id="loginBtn">🔒</button>
+      <button id="cartBtn">🛒 <span id="cartCount"></span></button>
     </div>
   </div>
 
-  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
-  
+  <!-- Gallery View -->
+  <div id="galleryView" class="container">
+    <div class="filter-bar">
+      <button class="filter-btn active" data-category="All">All</button>
+      <button class="filter-btn" data-category="Wildlife">Wildlife</button>
+      <button class="filter-btn" data-category="Landscape">Landscape</button>
+    </div>
+    <div class="gallery" id="gallery"></div>
+  </div>
+
+  <!-- Admin View -->
+  <div id="adminView" class="container" style="display:none;">
+    <div class="admin-panel">
+      <div class="admin-header">
+        <h2>Admin Panel</h2>
+        <button class="btn btn-primary" id="addPhotoBtn">+ Add Photo</button>
+      </div>
+      <div class="admin-grid" id="adminGallery"></div>
+    </div>
+  </div>
+
+  <!-- Photo Detail Modal -->
+  <div id="photoModal" class="modal">
+    <div class="modal-content">
+      <button class="close-btn" onclick="closePhotoModal()">×</button>
+      <img id="modalImg" src="" alt="">
+      <div class="modal-info">
+        <p class="hook" id="modalHook"></p>
+        <h2 id="modalTitle"></h2>
+        <p class="philosophy" id="modalPhilosophy"></p>
+        <div class="modal-footer">
+          <span class="price" id="modalPrice"></span>
+          <button class="btn btn-primary" onclick="addToCartFromModal()">Add to Cart</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Photo Form Modal -->
+  <div id="formModal" class="modal">
+    <div class="modal-content form-modal">
+      <button class="close-btn" onclick="closeFormModal()">×</button>
+      <h2 id="formTitle">Add Photo</h2>
+      <form id="photoForm">
+        <div class="form-group">
+          <label>Photo Upload</label>
+          <input type="file" id="photoFile" accept="image/*" required>
+          <img id="previewImg" class="preview-img" style="display:none;">
+        </div>
+        <div class="form-group">
+          <label>Title</label>
+          <input type="text" id="photoTitle" required>
+        </div>
+        <div class="form-group">
+          <label>Category</label>
+          <select id="photoCategory">
+            <option>Wildlife</option>
+            <option>Landscape</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Price ($)</label>
+          <input type="number" id="photoPrice" value="150">
+        </div>
+        <div class="form-group">
+          <label>Hook Line</label>
+          <input type="text" id="photoHook">
+        </div>
+        <div class="form-group">
+          <label>Philosophy / Description</label>
+          <textarea id="photoPhilosophy" rows="5"></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary" style="width:100%;">Save Photo</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Login Modal -->
+  <div id="loginModal" class="modal">
+    <div class="modal-content login-modal">
+      <button class="close-btn" onclick="closeLoginModal()">×</button>
+      <h2>Admin Login</h2>
+      <input type="password" id="passwordInput" placeholder="Enter password">
+      <button class="btn btn-primary" onclick="handleLogin()" style="width:100%;">Login</button>
+    </div>
+  </div>
+
+  <!-- Cart Modal -->
+  <div id="cartModal" class="modal">
+    <div class="modal-content form-modal">
+      <button class="close-btn" onclick="closeCartModal()">×</button>
+      <h2>Shopping Cart</h2>
+      <div id="cartItems"></div>
+      <div id="cartTotal" style="margin-top:1rem;font-size:1.25rem;font-weight:bold;"></div>
+      <button class="btn btn-primary" onclick="checkout()" style="width:100%;margin-top:1rem;">Checkout</button>
+    </div>
+  </div>
+
   <script>
-    const { useState, useEffect, createElement: h } = React;
-    const { createRoot } = ReactDOM;
-    const { Heart, ShoppingCart, MessageCircle, X, Menu, Book, Camera, Feather, Lock, Plus, Edit, Trash2, Save } = lucide;
+    const ADMIN_PASSWORD = 'grumpy2024';
+    let isAdmin = false;
+    let editingPhotoId = null;
+    let selectedPhoto = null;
+    let cart = [];
 
-    function PhotoPortfolio() {
-      const ADMIN_PASSWORD = 'grumpy2024';
-      
-      const initialPhotos = [
-        { id: 1, title: "Cheetah on the Serengeti Plains", category: "Wildlife", price: 150, url: "https://images.unsplash.com/photo-1551969014-7d2c4cddf0b6?w=1200", hookLine: "In stillness, the hunter waits", philosophy: "The cheetah embodies witness consciousness - alert, present, yet completely at peace. It does not question its nature or resist the moment.", likes: 24 },
-        { id: 2, title: "Golden Hour Savanna", category: "Landscape", price: 120, url: "https://images.unsplash.com/photo-1516426122078-c23e76319801?w=1200", hookLine: "Where earth meets infinity", philosophy: "The vast savanna reveals the illusion of separation. Sky and land merge in golden light.", likes: 18 }
-      ];
+    let photos = [
+      { id: 1, title: "Cheetah on the Serengeti Plains", category: "Wildlife", price: 150, url: "https://images.unsplash.com/photo-1551969014-7d2c4cddf0b6?w=1200", hookLine: "In stillness, the hunter waits", philosophy: "The cheetah embodies witness consciousness - alert, present, yet completely at peace.", likes: 24 },
+      { id: 2, title: "Golden Hour Savanna", category: "Landscape", price: 120, url: "https://images.unsplash.com/photo-1516426122078-c23e76319801?w=1200", hookLine: "Where earth meets infinity", philosophy: "The vast savanna reveals the illusion of separation.", likes: 18 }
+    ];
 
-      const [isAdmin, setIsAdmin] = useState(false);
-      const [adminPassword, setAdminPassword] = useState('');
-      const [showAdminLogin, setShowAdminLogin] = useState(false);
-      const [photos, setPhotos] = useState(initialPhotos);
-      const [currentView, setCurrentView] = useState('gallery');
-      const [category, setCategory] = useState('All');
-      const [selectedPhoto, setSelectedPhoto] = useState(null);
-      const [cart, setCart] = useState([]);
-      const [showCart, setShowCart] = useState(false);
-      const [showPhotoForm, setShowPhotoForm] = useState(false);
-      const [editingPhoto, setEditingPhoto] = useState(null);
-      const [photoForm, setPhotoForm] = useState({ title: '', category: 'Wildlife', price: 150, hookLine: '', philosophy: '', url: '' });
+    let currentCategory = 'All';
 
-      const handleAdminLogin = () => {
-        if (adminPassword === ADMIN_PASSWORD) {
-          setIsAdmin(true);
-          setShowAdminLogin(false);
-          setAdminPassword('');
-        } else {
-          alert('Incorrect password');
-        }
-      };
-
-      const handlePhotoUpload = (e) => {
-        const file = e.target.files[0];
-        if (file) {
-          const reader = new FileReader();
-          reader.onloadend = () => setPhotoForm({ ...photoForm, url: reader.result });
-          reader.readAsDataURL(file);
-        }
-      };
-
-      const savePhoto = () => {
-        if (!photoForm.title || !photoForm.url) return alert('Please fill in all fields');
-        if (editingPhoto) {
-          setPhotos(photos.map(p => p.id === editingPhoto.id ? { ...photoForm, id: editingPhoto.id, likes: editingPhoto.likes } : p));
-        } else {
-          setPhotos([...photos, { ...photoForm, id: Date.now(), likes: 0 }]);
-        }
-        setPhotoForm({ title: '', category: 'Wildlife', price: 150, hookLine: '', philosophy: '', url: '' });
-        setShowPhotoForm(false);
-        setEditingPhoto(null);
-      };
-
-      const editPhoto = (photo) => {
-        setEditingPhoto(photo);
-        setPhotoForm({ title: photo.title, category: photo.category, price: photo.price, hookLine: photo.hookLine, philosophy: photo.philosophy, url: photo.url });
-        setShowPhotoForm(true);
-      };
-
-      const deletePhoto = (id) => {
-        if (confirm('Delete this photo?')) setPhotos(photos.filter(p => p.id !== id));
-      };
-
-      const addToCart = (photo) => {
-        const existing = cart.find(item => item.id === photo.id);
-        if (existing) {
-          setCart(cart.map(item => item.id === photo.id ? { ...item, quantity: item.quantity + 1 } : item));
-        } else {
-          setCart([...cart, { ...photo, quantity: 1 }]);
-        }
-      };
-
-      const filteredPhotos = category === 'All' ? photos : photos.filter(p => p.category === category);
-      const cartTotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-
-      return h('div', { className: 'min-h-screen bg-stone-50' },
-        // Header
-        h('header', { className: 'bg-white border-b border-stone-200 sticky top-0 z-40 shadow-sm' },
-          h('div', { className: 'max-w-7xl mx-auto px-4 py-4' },
-            h('div', { className: 'flex items-center justify-between' },
-              h('div', { className: 'flex items-center gap-3' },
-                h('div', { className: 'w-10 h-10 bg-amber-800 rounded-full flex items-center justify-center' },
-                  h('span', { className: 'text-white font-serif text-lg' }, 'GI')
-                ),
-                h('div', null,
-                  h('h1', { className: 'text-2xl font-serif text-stone-800' }, 'Grumpy Iyer'),
-                  h('p', { className: 'text-xs text-stone-500' }, 'Photography & Philosophy')
-                )
-              ),
-              h('nav', { className: 'flex items-center gap-4' },
-                h('button', { onClick: () => setCurrentView('gallery'), className: currentView === 'gallery' ? 'text-amber-800' : 'text-stone-600' }, 'Gallery'),
-                isAdmin && h('button', { onClick: () => setCurrentView('admin'), className: currentView === 'admin' ? 'text-amber-800' : 'text-stone-600' }, 'Admin'),
-                !isAdmin && h('button', { onClick: () => setShowAdminLogin(true) }, h(Lock, { size: 18 })),
-                h('button', { onClick: () => setShowCart(true), className: 'relative' },
-                  h(ShoppingCart, { size: 20 }),
-                  cart.length > 0 && h('span', { className: 'absolute -top-1 -right-1 bg-amber-800 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center' }, cart.length)
-                )
-              )
-            )
-          )
-        ),
-
-        // Gallery View
-        currentView === 'gallery' && h('div', { className: 'max-w-7xl mx-auto px-4 py-8' },
-          h('div', { className: 'flex gap-2 mb-8' },
-            ['All', 'Wildlife', 'Landscape'].map(cat =>
-              h('button', {
-                key: cat,
-                onClick: () => setCategory(cat),
-                className: `px-4 py-2 rounded-full text-sm ${category === cat ? 'bg-amber-800 text-white' : 'bg-white text-stone-700 border border-stone-200'}`
-              }, cat)
-            )
-          ),
-          h('div', { className: 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8' },
-            filteredPhotos.map(photo =>
-              h('div', { key: photo.id, className: 'group cursor-pointer', onClick: () => setSelectedPhoto(photo) },
-                h('div', { className: 'relative overflow-hidden bg-white shadow-md hover:shadow-xl transition' },
-                  h('img', { src: photo.url, alt: photo.title, className: 'w-full aspect-[4/3] object-cover group-hover:scale-105 transition' }),
-                  h('div', { className: 'absolute inset-0 bg-gradient-to-t from-black/60 via-transparent opacity-0 group-hover:opacity-100 transition' },
-                    h('p', { className: 'absolute bottom-4 left-4 text-white text-sm italic' }, photo.hookLine)
-                  )
-                ),
-                h('div', { className: 'mt-4' },
-                  h('h3', { className: 'font-serif text-lg text-stone-800' }, photo.title),
-                  h('div', { className: 'flex justify-between text-sm' },
-                    h('span', { className: 'text-stone-500' }, photo.category),
-                    h('span', { className: 'text-amber-800 font-medium' }, '$' + photo.price)
-                  )
-                )
-              )
-            )
-          )
-        ),
-
-        // Admin Panel
-        currentView === 'admin' && isAdmin && h('div', { className: 'max-w-7xl mx-auto px-4 py-12' },
-          h('div', { className: 'flex justify-between mb-8' },
-            h('h2', { className: 'text-4xl font-serif text-stone-800' }, 'Admin Panel'),
-            h('button', { onClick: () => { setIsAdmin(false); setCurrentView('gallery'); }, className: 'px-4 py-2 bg-stone-200 rounded-lg' }, 'Logout')
-          ),
-          h('div', { className: 'bg-white rounded-lg shadow-md p-6' },
-            h('div', { className: 'flex justify-between mb-6' },
-              h('h3', { className: 'text-2xl font-serif' }, 'Manage Photos'),
-              h('button', {
-                onClick: () => {
-                  setEditingPhoto(null);
-                  setPhotoForm({ title: '', category: 'Wildlife', price: 150, hookLine: '', philosophy: '', url: '' });
-                  setShowPhotoForm(true);
-                },
-                className: 'flex items-center gap-2 bg-amber-800 text-white px-4 py-2 rounded-lg'
-              },
-                h(Plus, { size: 18 }),
-                ' Add Photo'
-              )
-            ),
-            h('div', { className: 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4' },
-              photos.map(photo =>
-                h('div', { key: photo.id, className: 'bg-stone-50 rounded-lg overflow-hidden' },
-                  h('img', { src: photo.url, alt: photo.title, className: 'w-full h-48 object-cover' }),
-                  h('div', { className: 'p-4' },
-                    h('h4', { className: 'font-serif mb-2' }, photo.title),
-                    h('p', { className: 'text-sm text-stone-600 mb-3' }, photo.category + ' · $' + photo.price),
-                    h('div', { className: 'flex gap-2' },
-                      h('button', { onClick: () => editPhoto(photo), className: 'flex-1 bg-blue-600 text-white py-2 rounded' }, 'Edit'),
-                      h('button', { onClick: () => deletePhoto(photo.id), className: 'flex-1 bg-red-600 text-white py-2 rounded' }, 'Delete')
-                    )
-                  )
-                )
-              )
-            )
-          )
-        ),
-
-        // Photo Form Modal
-        showPhotoForm && h('div', { className: 'fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4 overflow-y-auto' },
-          h('div', { className: 'bg-white rounded-lg max-w-2xl w-full p-6 my-8' },
-            h('div', { className: 'flex justify-between mb-6' },
-              h('h2', { className: 'text-2xl font-serif' }, editingPhoto ? 'Edit Photo' : 'Add Photo'),
-              h('button', { onClick: () => setShowPhotoForm(false) }, h(X, { size: 24 }))
-            ),
-            h('div', { className: 'space-y-4' },
-              h('div', null,
-                h('label', { className: 'block text-sm font-medium mb-2' }, 'Photo Upload'),
-                h('input', { type: 'file', accept: 'image/*', onChange: handlePhotoUpload, className: 'w-full border border-stone-300 rounded-lg px-4 py-2' }),
-                photoForm.url && h('img', { src: photoForm.url, alt: 'Preview', className: 'mt-3 w-full h-48 object-cover rounded' })
-              ),
-              h('input', { type: 'text', placeholder: 'Title', value: photoForm.title, onChange: (e) => setPhotoForm({...photoForm, title: e.target.value}), className: 'w-full border border-stone-300 rounded-lg px-4 py-2' }),
-              h('div', { className: 'grid grid-cols-2 gap-4' },
-                h('select', { value: photoForm.category, onChange: (e) => setPhotoForm({...photoForm, category: e.target.value}), className: 'border border-stone-300 rounded-lg px-4 py-2' },
-                  h('option', null, 'Wildlife'),
-                  h('option', null, 'Landscape')
-                ),
-                h('input', { type: 'number', placeholder: 'Price', value: photoForm.price, onChange: (e) => setPhotoForm({...photoForm, price: parseInt(e.target.value)}), className: 'border border-stone-300 rounded-lg px-4 py-2' })
-              ),
-              h('input', { type: 'text', placeholder: 'Hook Line', value: photoForm.hookLine, onChange: (e) => setPhotoForm({...photoForm, hookLine: e.target.value}), className: 'w-full border border-stone-300 rounded-lg px-4 py-2' }),
-              h('textarea', { placeholder: 'Philosophy', value: photoForm.philosophy, onChange: (e) => setPhotoForm({...photoForm, philosophy: e.target.value}), rows: 5, className: 'w-full border border-stone-300 rounded-lg px-4 py-2' }),
-              h('button', { onClick: savePhoto, className: 'w-full bg-amber-800 text-white py-3 rounded-lg font-medium' }, 'Save Photo')
-            )
-          )
-        ),
-
-        // Admin Login Modal
-        showAdminLogin && h('div', { className: 'fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4' },
-          h('div', { className: 'bg-white rounded-lg max-w-md w-full p-8' },
-            h('div', { className: 'flex justify-between mb-6' },
-              h('h2', { className: 'text-2xl font-serif' }, 'Admin Login'),
-              h('button', { onClick: () => setShowAdminLogin(false) }, h(X, { size: 24 }))
-            ),
-            h('input', { type: 'password', value: adminPassword, onChange: (e) => setAdminPassword(e.target.value), onKeyPress: (e) => e.key === 'Enter' && handleAdminLogin(), placeholder: 'Enter password', className: 'w-full border border-stone-300 rounded-lg px-4 py-3 mb-4' }),
-            h('button', { onClick: handleAdminLogin, className: 'w-full bg-amber-800 text-white py-3 rounded-lg' }, 'Login')
-          )
-        ),
-
-        // Photo Detail Modal
-        selectedPhoto && h('div', { className: 'fixed inset-0 bg-black/95 z-50 flex items-center justify-center p-4', onClick: () => setSelectedPhoto(null) },
-          h('div', { className: 'bg-white rounded-lg max-w-5xl w-full relative', onClick: (e) => e.stopPropagation() },
-            h('button', { onClick: () => setSelectedPhoto(null), className: 'absolute top-4 right-4 bg-white p-2 rounded-full z-10' }, h(X, { size: 24 })),
-            h('img', { src: selectedPhoto.url, alt: selectedPhoto.title, className: 'w-full h-auto max-h-[60vh] object-contain' }),
-            h('div', { className: 'p-8' },
-              h('p', { className: 'text-amber-800 italic text-lg mb-3' }, selectedPhoto.hookLine),
-              h('h2', { className: 'text-3xl font-serif text-stone-800 mb-4' }, selectedPhoto.title),
-              h('p', { className: 'text-stone-600 leading-relaxed mb-6' }, selectedPhoto.philosophy),
-              h('div', { className: 'flex justify-between items-center border-t border-stone-200 pt-6' },
-                h('span', { className: 'text-2xl font-serif text-amber-800' }, '$' + selectedPhoto.price),
-                h('button', { onClick: () => { addToCart(selectedPhoto); setSelectedPhoto(null); }, className: 'bg-amber-800 text-white px-6 py-3 rounded-lg' }, 'Add to Cart')
-              )
-            )
-          )
-        ),
-
-        // Shopping Cart Modal
-        showCart && h('div', { className: 'fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4' },
-          h('div', { className: 'bg-white rounded-lg max-w-2xl w-full p-6' },
-            h('div', { className: 'flex justify-between mb-6' },
-              h('h2', { className: 'text-2xl font-serif' }, 'Shopping Cart'),
-              h('button', { onClick: () => setShowCart(false) }, h(X, { size: 24 }))
-            ),
-            cart.length === 0 ? h('div', { className: 'text-center py-12 text-stone-400' },
-              h(ShoppingCart, { size: 48, className: 'mx-auto mb-4 opacity-50' }),
-              h('p', null, 'Your cart is empty')
-            ) : h('div', null,
-              cart.map(item =>
-                h('div', { key: item.id, className: 'flex gap-4 bg-stone-50 rounded-lg p-4 mb-4' },
-                  h('img', { src: item.url, alt: item.title, className: 'w-24 h-24 object-cover rounded' }),
-                  h('div', { className: 'flex-1' },
-                    h('h3', { className: 'font-serif text-lg' }, item.title),
-                    h('p', { className: 'text-sm text-stone-500' }, item.category),
-                    h('span', { className: 'font-medium' }, '$' + (item.price * item.quantity))
-                  )
-                )
-              ),
-              h('div', { className: 'border-t border-stone-200 pt-4' },
-                h('div', { className: 'flex justify-between text-xl font-serif mb-4' },
-                  h('span', null, 'Total:'),
-                  h('span', { className: 'text-amber-800' }, '$' + cartTotal)
-                ),
-                h('button', { onClick: () => { alert('Payment processing would happen here!'); setCart([]); setShowCart(false); }, className: 'w-full bg-amber-800 text-white py-3 rounded-lg' }, 'Checkout')
-              )
-            )
-          )
-        )
-      );
+    // Initialize
+    function init() {
+      renderGallery();
+      setupEventListeners();
     }
 
-    const root = createRoot(document.getElementById('root'));
-    root.render(h(PhotoPortfolio));
+    function setupEventListeners() {
+      document.getElementById('galleryBtn').addEventListener('click', () => showView('gallery'));
+      document.getElementById('adminBtn').addEventListener('click', () => showView('admin'));
+      document.getElementById('loginBtn').addEventListener('click', () => document.getElementById('loginModal').classList.add('active'));
+      document.getElementById('cartBtn').addEventListener('click', openCart);
+      document.getElementById('addPhotoBtn').addEventListener('click', openPhotoForm);
+      document.getElementById('photoForm').addEventListener('submit', savePhoto);
+      document.getElementById('photoFile').addEventListener('change', previewImage);
+
+      document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+          e.target.classList.add('active');
+          currentCategory = e.target.dataset.category;
+          renderGallery();
+        });
+      });
+    }
+
+    function showView(view) {
+      document.getElementById('galleryView').style.display = view === 'gallery' ? 'block' : 'none';
+      document.getElementById('adminView').style.display = view === 'admin' ? 'block' : 'none';
+      document.querySelectorAll('.nav button').forEach(b => b.classList.remove('active'));
+      if (view === 'gallery') document.getElementById('galleryBtn').classList.add('active');
+      if (view === 'admin') document.getElementById('adminBtn').classList.add('active');
+      if (view === 'admin') renderAdminGallery();
+    }
+
+    function renderGallery() {
+      const filtered = currentCategory === 'All' ? photos : photos.filter(p => p.category === currentCategory);
+      const html = filtered.map(p => `
+        <div class="photo-card" onclick="openPhotoModal(${p.id})">
+          <img src="${p.url}" alt="${p.title}">
+          <div class="photo-info">
+            <h3>${p.title}</h3>
+            <div class="photo-meta">
+              <span class="category">${p.category}</span>
+              <span class="price">$${p.price}</span>
+            </div>
+          </div>
+        </div>
+      `).join('');
+      document.getElementById('gallery').innerHTML = html;
+    }
+
+    function renderAdminGallery() {
+      const html = photos.map(p => `
+        <div class="admin-card">
+          <img src="${p.url}" alt="${p.title}">
+          <h4>${p.title}</h4>
+          <p>${p.category} · $${p.price}</p>
+          <div class="admin-actions">
+            <button class="btn btn-small btn-edit" onclick="editPhoto(${p.id})">Edit</button>
+            <button class="btn btn-small btn-delete" onclick="deletePhoto(${p.id})">Delete</button>
+          </div>
+        </div>
+      `).join('');
+      document.getElementById('adminGallery').innerHTML = html;
+    }
+
+    function openPhotoModal(id) {
+      selectedPhoto = photos.find(p => p.id === id);
+      if (!selectedPhoto) return;
+      document.getElementById('modalImg').src = selectedPhoto.url;
+      document.getElementById('modalTitle').textContent = selectedPhoto.title;
+      document.getElementById('modalHook').textContent = selectedPhoto.hookLine;
+      document.getElementById('modalPhilosophy').textContent = selectedPhoto.philosophy;
+      document.getElementById('modalPrice').textContent = '$' + selectedPhoto.price;
+      document.getElementById('photoModal').classList.add('active');
+    }
+
+    function closePhotoModal() {
+      document.getElementById('photoModal').classList.remove('active');
+      selectedPhoto = null;
+    }
+
+    function openPhotoForm(id = null) {
+      editingPhotoId = id;
+      document.getElementById('formTitle').textContent = id ? 'Edit Photo' : 'Add Photo';
+      if (id) {
+        const photo = photos.find(p => p.id === id);
+        document.getElementById('photoTitle').value = photo.title;
+        document.getElementById('photoCategory').value = photo.category;
+        document.getElementById('photoPrice').value = photo.price;
+        document.getElementById('photoHook').value = photo.hookLine;
+        document.getElementById('photoPhilosophy').value = photo.philosophy;
+        document.getElementById('previewImg').src = photo.url;
+        document.getElementById('previewImg').style.display = 'block';
+      } else {
+        document.getElementById('photoForm').reset();
+        document.getElementById('previewImg').style.display = 'none';
+      }
+      document.getElementById('formModal').classList.add('active');
+    }
+
+    function closeFormModal() {
+      document.getElementById('formModal').classList.remove('active');
+      editingPhotoId = null;
+    }
+
+    function previewImage(e) {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          document.getElementById('previewImg').src = e.target.result;
+          document.getElementById('previewImg').style.display = 'block';
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+
+    function savePhoto(e) {
+      e.preventDefault();
+      const photo = {
+        id: editingPhotoId || Date.now(),
+        title: document.getElementById('photoTitle').value,
+        category: document.getElementById('photoCategory').value,
+        price: parseInt(document.getElementById('photoPrice').value),
+        hookLine: document.getElementById('photoHook').value,
+        philosophy: document.getElementById('photoPhilosophy').value,
+        url: document.getElementById('previewImg').src,
+        likes: 0
+      };
+
+      if (editingPhotoId) {
+        const index = photos.findIndex(p => p.id === editingPhotoId);
+        photos[index] = { ...photos[index], ...photo };
+      } else {
+        photos.push(photo);
+      }
+
+      closeFormModal();
+      renderGallery();
+      renderAdminGallery();
+    }
+
+    function editPhoto(id) {
+      openPhotoForm(id);
+    }
+
+    function deletePhoto(id) {
+      if (confirm('Delete this photo?')) {
+        photos = photos.filter(p => p.id !== id);
+        renderAdminGallery();
+        renderGallery();
+      }
+    }
+
+    function handleLogin() {
+      const password = document.getElementById('passwordInput').value;
+      if (password === ADMIN_PASSWORD) {
+        isAdmin = true;
+        document.getElementById('adminBtn').style.display = 'block';
+        document.getElementById('loginBtn').textContent = '🔓';
+        closeLoginModal();
+        alert('Logged in successfully!');
+      } else {
+        alert('Incorrect password');
+      }
+    }
+
+    function closeLoginModal() {
+      document.getElementById('loginModal').classList.remove('active');
+      document.getElementById('passwordInput').value = '';
+    }
+
+    function addToCartFromModal() {
+      if (selectedPhoto) {
+        const existing = cart.find(item => item.id === selectedPhoto.id);
+        if (existing) {
+          existing.quantity++;
+        } else {
+          cart.push({ ...selectedPhoto, quantity: 1 });
+        }
+        updateCartCount();
+        closePhotoModal();
+        alert('Added to cart!');
+      }
+    }
+
+    function updateCartCount() {
+      const count = cart.reduce((sum, item) => sum + item.quantity, 0);
+      document.getElementById('cartCount').textContent = count > 0 ? count : '';
+    }
+
+    function openCart() {
+      if (cart.length === 0) {
+        document.getElementById('cartItems').innerHTML = '<p style="text-align:center;color:#78716c;padding:2rem;">Your cart is empty</p>';
+        document.getElementById('cartTotal').innerHTML = '';
+      } else {
+        const html = cart.map(item => `
+          <div style="display:flex;gap:1rem;background:#fafaf9;padding:1rem;border-radius:0.5rem;margin-bottom:1rem;">
+            <img src="${item.url}" style="width:80px;height:80px;object-fit:cover;border-radius:0.5rem;">
+            <div style="flex:1;">
+              <h4>${item.title}</h4>
+              <p style="color:#78716c;font-size:0.875rem;">${item.category}</p>
+              <p style="font-weight:600;">$${item.price * item.quantity}</p>
+            </div>
+          </div>
+        `).join('');
+        const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+        document.getElementById('cartItems').innerHTML = html;
+        document.getElementById('cartTotal').innerHTML = `Total: <span style="color:#78350f;">$${total}</span>`;
+      }
+      document.getElementById('cartModal').classList.add('active');
+    }
+
+    function closeCartModal() {
+      document.getElementById('cartModal').classList.remove('active');
+    }
+
+    function checkout() {
+      alert('Payment processing would happen here!');
+      cart = [];
+      updateCartCount();
+      closeCartModal();
+    }
+
+    // Start the app
+    init();
   </script>
 </body>
 </html>
