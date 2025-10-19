@@ -227,16 +227,28 @@
     }
 
     function showView(view) {
+      console.log('Showing view:', view);
+      console.log('Total photos:', photos.length);
+      console.log('Current category:', currentCategory);
+      
       document.getElementById('galleryView').style.display = view === 'gallery' ? 'block' : 'none';
       document.getElementById('adminView').style.display = view === 'admin' ? 'block' : 'none';
       document.querySelectorAll('.nav button').forEach(b => b.classList.remove('active'));
-      if (view === 'gallery') document.getElementById('galleryBtn').classList.add('active');
-      if (view === 'admin') document.getElementById('adminBtn').classList.add('active');
-      if (view === 'admin') renderAdminGallery();
+      if (view === 'gallery') {
+        document.getElementById('galleryBtn').classList.add('active');
+        renderGallery();
+      }
+      if (view === 'admin') {
+        document.getElementById('adminBtn').classList.add('active');
+        renderAdminGallery();
+      }
     }
 
     function renderGallery() {
       const filtered = currentCategory === 'All' ? photos : photos.filter(p => p.category === currentCategory);
+      console.log('Rendering gallery. Filtered photos:', filtered.length);
+      console.log('Photos:', filtered);
+      
       const html = filtered.map(p => `
         <div class="photo-card" onclick="openPhotoModal(${p.id})">
           <img src="${p.url}" alt="${p.title}">
@@ -244,12 +256,13 @@
             <h3>${p.title}</h3>
             <div class="photo-meta">
               <span class="category">${p.category}</span>
-              <span class="price">$${p.price}</span>
+              <span class="price">${p.price}</span>
             </div>
           </div>
         </div>
       `).join('');
       document.getElementById('gallery').innerHTML = html;
+      console.log('Gallery HTML updated');
     }
 
     function renderAdminGallery() {
@@ -342,6 +355,8 @@
         likes: 0
       };
 
+      console.log('Saving photo:', photo);
+
       if (editingPhotoId) {
         const index = photos.findIndex(p => p.id === editingPhotoId);
         if (index !== -1) {
@@ -351,10 +366,11 @@
         photos.push(photo);
       }
 
+      console.log('Total photos after save:', photos.length);
       savePhotosToStorage();
       closeFormModal();
       renderGallery();
-      if (isAdmin) renderAdminGallery();
+      renderAdminGallery();
       alert('Photo saved successfully!');
     }
 
