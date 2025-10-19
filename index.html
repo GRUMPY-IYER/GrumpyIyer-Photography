@@ -98,7 +98,7 @@
     <div class="admin-panel">
       <div class="admin-header">
         <h2>Admin Panel</h2>
-        <button class="btn btn-primary" id="addPhotoBtn" onclick="openPhotoForm()">+ Add Photo</button>
+        <button class="btn btn-primary" onclick="event.stopPropagation(); openPhotoForm(null);">+ Add Photo</button>
       </div>
       <div class="admin-grid" id="adminGallery"></div>
     </div>
@@ -212,7 +212,6 @@
       document.getElementById('adminBtn').addEventListener('click', () => showView('admin'));
       document.getElementById('loginBtn').addEventListener('click', () => document.getElementById('loginModal').classList.add('active'));
       document.getElementById('cartBtn').addEventListener('click', openCart);
-      document.getElementById('addPhotoBtn').addEventListener('click', openPhotoForm);
       document.getElementById('photoForm').addEventListener('submit', savePhoto);
       document.getElementById('photoFile').addEventListener('change', previewImage);
 
@@ -296,10 +295,17 @@
       selectedPhoto = null;
     }
 
-    function openPhotoForm(id = null) {
+    function openPhotoForm(id) {
+      // Explicitly check if id is null or undefined
+      if (id === null || id === undefined || typeof id === 'object') {
+        id = null;
+      }
+      
       editingPhotoId = id;
+      console.log('Opening photo form. Editing ID:', editingPhotoId);
       document.getElementById('formTitle').textContent = id ? 'Edit Photo' : 'Add Photo';
-      if (id) {
+      
+      if (id && typeof id === 'number') {
         const photo = photos.find(p => p.id === id);
         if (photo) {
           document.getElementById('photoTitle').value = photo.title;
@@ -344,8 +350,11 @@
         return;
       }
       
+      // Generate a proper numeric ID for new photos
+      const newId = editingPhotoId && typeof editingPhotoId === 'number' ? editingPhotoId : Date.now();
+      
       const photo = {
-        id: editingPhotoId || Date.now(),
+        id: newId,
         title: document.getElementById('photoTitle').value,
         category: document.getElementById('photoCategory').value,
         price: parseInt(document.getElementById('photoPrice').value),
@@ -355,15 +364,18 @@
         likes: 0
       };
 
-      console.log('Saving photo:', photo);
+      console.log('Saving photo with ID:', photo.id, 'Type:', typeof photo.id);
+      console.log('Is editing?', editingPhotoId, 'Type:', typeof editingPhotoId);
 
-      if (editingPhotoId) {
+      if (editingPhotoId && typeof editingPhotoId === 'number') {
         const index = photos.findIndex(p => p.id === editingPhotoId);
         if (index !== -1) {
           photos[index] = { ...photos[index], ...photo };
+          console.log('Updated existing photo at index', index);
         }
       } else {
         photos.push(photo);
+        console.log('Added new photo');
       }
 
       console.log('Total photos after save:', photos.length);
