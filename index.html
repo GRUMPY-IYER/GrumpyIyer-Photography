@@ -188,9 +188,14 @@
   </div>
 
   <script>
-    const VERSION = 'Dec 19, 2024 - 10:45 PM EST'; // Update timestamp with each deployment
-    const BUILD = '2024.12.19.001'; // Increment this: YYYY.MM.DD.XXX
+    const VERSION = 'Dec 19, 2024 - 11:30 AM EST'; // Update timestamp with each deployment
+    const BUILD = '2024.12.19.002'; // Cloudinary Integration
     const ADMIN_PASSWORD = 'grumpy2024';
+    
+    // Cloudinary Configuration
+    const CLOUDINARY_CLOUD_NAME = 'dzudd8xbx';
+    const CLOUDINARY_UPLOAD_PRESET = 'grumpyiyer_unsigned';
+    const CLOUDINARY_UPLOAD_URL = `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`;
     let isAdmin = false;
     let editingPhotoId = null;
     let selectedPhoto = null;
@@ -342,6 +347,12 @@
     function previewImage(e) {
       const file = e.target.files[0];
       if (file) {
+        // Check file size (max 10MB for free tier)
+        if (file.size > 10 * 1024 * 1024) {
+          alert('File too large! Please choose an image under 10MB.');
+          return;
+        }
+        
         const reader = new FileReader();
         reader.onload = (e) => {
           document.getElementById('previewImg').src = e.target.result;
@@ -354,12 +365,73 @@
     function savePhoto(e) {
       e.preventDefault();
       
+      const fileInput = document.getElementById('photoFile');
       const previewImg = document.getElementById('previewImg');
-      if (!previewImg.src || previewImg.src === window.location.href) {
-        alert('Please upload a photo first!');
+      
+      // Check if we're editing (already has URL) or adding new (need to upload)
+      if (editingPhotoId && typeof editingPhotoId === 'number') {
+        // Editing existing photo - save without re-uploading unless new file selected
+        if (fileInput.files.length === 0) {
+          // No new file, just update metadata
+          savePhotoMetadata(previewImg.src);
+          return;
+        }
+      }
+      
+      // Check if file is selected
+      if (!fileInput.files || fileInput.files.length === 0) {
+        alert('Please select a photo to upload!');
         return;
       }
       
+      const file = fileInput.files[0];
+      
+      // Show uploading message
+      const formButton = document.querySelector('#photoForm button[type="submit"]');
+      const originalButtonText = formButton.textContent;
+      formButton.textContent = 'Uploading to Cloudinary...';
+      formButton.disabled = true;
+      
+      // Upload to Cloudinary
+      uploadToCloudinary(file)
+        .then(cloudinaryUrl => {
+          console.log('Cloudinary URL:', cloudinaryUrl);
+          savePhotoMetadata(cloudinaryUrl);
+          formButton.textContent = originalButtonText;
+          formButton.disabled = false;
+        })
+        .catch(error => {
+          console.error('Upload error:', error);
+          alert('Failed to upload photo. Please try again.');
+          formButton.textContent = originalButtonText;
+          formButton.disabled = false;
+        });
+    }
+    
+    function uploadToCloudinary(file) {
+      return new Promise((resolve, reject) => {
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+        formData.append('folder', 'photography');
+        
+        fetch(CLOUDINARY_UPLOAD_URL, {
+          method: 'POST',
+          body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.secure_url) {
+            resolve(data.secure_url);
+          } else {
+            reject(new Error('No URL in response'));
+          }
+        })
+        .catch(error => reject(error));
+      });
+    }
+    
+    function savePhotoMetadata(photoUrl) {
       // Generate a proper numeric ID for new photos
       const newId = editingPhotoId && typeof editingPhotoId === 'number' ? editingPhotoId : Date.now();
       
@@ -370,7 +442,7 @@
         price: parseInt(document.getElementById('photoPrice').value),
         hookLine: document.getElementById('photoHook').value || '',
         philosophy: document.getElementById('photoPhilosophy').value || '',
-        url: previewImg.src,
+        url: photoUrl,
         likes: 0
       };
 
