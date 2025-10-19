@@ -318,27 +318,36 @@
 
     function savePhoto(e) {
       e.preventDefault();
+      
+      const previewImg = document.getElementById('previewImg');
+      if (!previewImg.src || previewImg.src === window.location.href) {
+        alert('Please upload a photo first!');
+        return;
+      }
+      
       const photo = {
         id: editingPhotoId || Date.now(),
         title: document.getElementById('photoTitle').value,
         category: document.getElementById('photoCategory').value,
         price: parseInt(document.getElementById('photoPrice').value),
-        hookLine: document.getElementById('photoHook').value,
-        philosophy: document.getElementById('photoPhilosophy').value,
-        url: document.getElementById('previewImg').src,
+        hookLine: document.getElementById('photoHook').value || '',
+        philosophy: document.getElementById('photoPhilosophy').value || '',
+        url: previewImg.src,
         likes: 0
       };
 
       if (editingPhotoId) {
         const index = photos.findIndex(p => p.id === editingPhotoId);
-        photos[index] = { ...photos[index], ...photo };
+        if (index !== -1) {
+          photos[index] = { ...photos[index], ...photo };
+        }
       } else {
         photos.push(photo);
       }
 
       closeFormModal();
       renderGallery();
-      renderAdminGallery();
+      if (isAdmin) renderAdminGallery();
     }
 
     function editPhoto(id) {
