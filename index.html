@@ -97,7 +97,13 @@
   <div id="adminView" class="container" style="display:none;">
     <div class="admin-panel">
       <div class="admin-header">
-        <h2>Admin Panel</h2>
+        <div>
+          <h2>Admin Panel</h2>
+          <p style="font-size:0.875rem;color:#78716c;margin-top:0.25rem;">
+            Deployed: <span id="versionDisplay"></span><br>
+            Build: <span id="buildDisplay"></span>
+          </p>
+        </div>
         <button class="btn btn-primary" onclick="event.stopPropagation(); openPhotoForm(null);">+ Add Photo</button>
       </div>
       <div class="admin-grid" id="adminGallery"></div>
@@ -182,6 +188,8 @@
   </div>
 
   <script>
+    const VERSION = 'Dec 19, 2024 - 10:45 PM EST'; // Update timestamp with each deployment
+    const BUILD = '2024.12.19.001'; // Increment this: YYYY.MM.DD.XXX
     const ADMIN_PASSWORD = 'grumpy2024';
     let isAdmin = false;
     let editingPhotoId = null;
@@ -203,6 +211,8 @@
 
     // Initialize
     function init() {
+      document.getElementById('versionDisplay').textContent = VERSION;
+      document.getElementById('buildDisplay').textContent = BUILD;
       renderGallery();
       setupEventListeners();
     }
