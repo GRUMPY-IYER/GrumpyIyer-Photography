@@ -282,16 +282,19 @@
       document.getElementById('formTitle').textContent = id ? 'Edit Photo' : 'Add Photo';
       if (id) {
         const photo = photos.find(p => p.id === id);
-        document.getElementById('photoTitle').value = photo.title;
-        document.getElementById('photoCategory').value = photo.category;
-        document.getElementById('photoPrice').value = photo.price;
-        document.getElementById('photoHook').value = photo.hookLine;
-        document.getElementById('photoPhilosophy').value = photo.philosophy;
-        document.getElementById('previewImg').src = photo.url;
-        document.getElementById('previewImg').style.display = 'block';
+        if (photo) {
+          document.getElementById('photoTitle').value = photo.title;
+          document.getElementById('photoCategory').value = photo.category;
+          document.getElementById('photoPrice').value = photo.price;
+          document.getElementById('photoHook').value = photo.hookLine || '';
+          document.getElementById('photoPhilosophy').value = photo.philosophy || '';
+          document.getElementById('previewImg').src = photo.url;
+          document.getElementById('previewImg').style.display = 'block';
+        }
       } else {
         document.getElementById('photoForm').reset();
         document.getElementById('previewImg').style.display = 'none';
+        document.getElementById('photoPrice').value = '150';
       }
       document.getElementById('formModal').classList.add('active');
     }
