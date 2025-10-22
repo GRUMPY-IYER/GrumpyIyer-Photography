@@ -7,6 +7,21 @@
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #fafaf9; }
+    
+    /* Disable right-click and image dragging globally */
+    img { 
+      -webkit-user-drag: none;
+      -khtml-user-drag: none;
+      -moz-user-drag: none;
+      -o-user-drag: none;
+      user-drag: none;
+      pointer-events: none;
+      user-select: none;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+    }
+    
     .header { background: white; border-bottom: 1px solid #e7e5e4; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 10; }
     .logo { display: flex; align-items: center; gap: 1rem; }
     .logo-circle { width: 40px; height: 40px; background: #78350f; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-family: serif; }
@@ -24,7 +39,7 @@
     .gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 2rem; }
     .photo-card { background: white; box-shadow: 0 1px 3px rgba(0,0,0,0.1); overflow: hidden; cursor: pointer; transition: box-shadow 0.3s; }
     .photo-card:hover { box-shadow: 0 10px 25px rgba(0,0,0,0.15); }
-    .photo-card img { width: 100%; height: 250px; object-fit: cover; }
+    .photo-card img { width: 100%; height: 250px; object-fit: cover; pointer-events: none; user-select: none; -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; }
     .photo-info { padding: 1rem; }
     .photo-info h3 { font-family: serif; font-size: 1.125rem; margin-bottom: 0.5rem; color: #1c1917; }
     .photo-meta { display: flex; justify-content: space-between; font-size: 0.875rem; }
@@ -33,7 +48,7 @@
     .modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.95); z-index: 100; align-items: center; justify-content: center; }
     .modal.active { display: flex; }
     .modal-content { background: white; max-width: 900px; max-height: 90vh; overflow-y: auto; position: relative; }
-    .modal-content img { width: 100%; max-height: 60vh; object-fit: contain; }
+    .modal-content img { width: 100%; max-height: 60vh; object-contain: contain; pointer-events: none; user-select: none; -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; -webkit-touch-callout: none; }
     .modal-info { padding: 2rem; }
     .modal-info .hook { font-style: italic; color: #78350f; font-size: 1.125rem; margin-bottom: 1rem; }
     .modal-info h2 { font-family: serif; font-size: 2rem; margin-bottom: 1rem; }
@@ -188,8 +203,8 @@
   </div>
 
   <script>
-    const VERSION = 'Dec 19, 2024 - 11:30 AM EST'; // Update timestamp with each deployment
-    const BUILD = '2024.12.19.002'; // Cloudinary Integration
+    const VERSION = 'Dec 19, 2024 - 12:00 PM EST';
+    const BUILD = '2024.12.19.003'; // Image Protection Added
     const ADMIN_PASSWORD = 'grumpy2024';
     
     // Cloudinary Configuration
@@ -220,6 +235,48 @@
       document.getElementById('buildDisplay').textContent = BUILD;
       renderGallery();
       setupEventListeners();
+      disableImageProtection();
+    }
+    
+    // Disable right-click and image protection
+    function disableImageProtection() {
+      // Disable right-click on entire document
+      document.addEventListener('contextmenu', function(e) {
+        e.preventDefault();
+        return false;
+      });
+      
+      // Disable keyboard shortcuts for saving images
+      document.addEventListener('keydown', function(e) {
+        // Disable Ctrl+S, Cmd+S (Save)
+        if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+          e.preventDefault();
+          return false;
+        }
+        // Disable Ctrl+Shift+I, Cmd+Option+I (Inspect)
+        if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'I') {
+          e.preventDefault();
+          return false;
+        }
+        // Disable F12 (DevTools)
+        if (e.key === 'F12') {
+          e.preventDefault();
+          return false;
+        }
+      });
+      
+      // Disable drag and drop
+      document.addEventListener('dragstart', function(e) {
+        if (e.target.tagName === 'IMG') {
+          e.preventDefault();
+          return false;
+        }
+      });
+      
+      // Add watermark overlay on hover (optional extra protection)
+      document.querySelectorAll('img').forEach(img => {
+        img.style.position = 'relative';
+      });
     }
 
     function setupEventListeners() {
