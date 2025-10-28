@@ -3,551 +3,94 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Grumpy Iyer Viewfinder - Wildlife Photography & Philosophy</title>
+  <title>Grumpy Iyer Viewfinder</title>
   <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&family=Amatic+SC:wght@700&display=swap" rel="stylesheet">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    
     :root {
       --deep-blue: #0f4c75;
       --purple: #4A148C;
       --gold: #F57F17;
       --cream: #f5f5f4;
-      --dark-text: #1c1917;
-      --light-blue: #7a9eb5;
     }
-    
-    body { 
-      font-family: 'Lora', serif; 
-      background: var(--cream);
-      color: var(--dark-text);
-    }
-    
-    /* Image Protection */
-    img { 
-      -webkit-user-drag: none;
-      user-drag: none;
-      user-select: none;
-      -webkit-user-select: none;
-    }
-    
+    body { font-family: 'Lora', serif; background: var(--cream); color: #1c1917; }
+    img { -webkit-user-drag: none; user-drag: none; user-select: none; }
     button { pointer-events: auto !important; cursor: pointer; }
     
-    /* Layout */
     .app-container { display: flex; min-height: 100vh; }
-    
-    /* Sidebar */
-    .sidebar { 
-      width: 280px; 
-      background: var(--deep-blue); 
-      color: white; 
-      position: fixed; 
-      height: 100vh; 
-      overflow-y: auto;
-      z-index: 100;
-      transition: transform 0.3s;
-    }
-    
-    .sidebar-header {
-      padding: 2rem 1.5rem;
-      border-bottom: 1px solid rgba(255,255,255,0.1);
-      text-align: center;
-    }
-    
-    .logo-img {
-      width: 180px;
-      height: auto;
-      margin-bottom: 1rem;
-    }
-    
+    .sidebar { width: 280px; background: var(--deep-blue); color: white; position: fixed; height: 100vh; overflow-y: auto; z-index: 100; }
+    .sidebar-header { padding: 2rem 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.1); text-align: center; }
+    .logo-img { width: 180px; height: auto; margin-bottom: 1rem; }
     .sidebar-nav { padding: 1rem 0; }
-    
-    .nav-item {
-      padding: 0.875rem 1.5rem;
-      cursor: pointer;
-      transition: background 0.2s;
-      border-left: 3px solid transparent;
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      font-size: 0.95rem;
-    }
-    
+    .nav-item { padding: 0.875rem 1.5rem; cursor: pointer; transition: background 0.2s; border-left: 3px solid transparent; display: flex; align-items: center; gap: 0.75rem; font-size: 0.95rem; }
     .nav-item:hover { background: rgba(255,255,255,0.1); }
-    .nav-item.active { 
-      background: rgba(255,255,255,0.15); 
-      border-left-color: var(--gold);
-      font-weight: 600;
-    }
-    
+    .nav-item.active { background: rgba(255,255,255,0.15); border-left-color: var(--gold); font-weight: 600; }
     .nav-folder { font-weight: 600; margin-top: 0.5rem; }
     .nav-subfolder { padding-left: 3rem; font-size: 0.875rem; }
     
-    /* Main Content */
-    .main-content {
-      margin-left: 280px;
-      flex: 1;
-      min-height: 100vh;
-    }
+    .main-content { margin-left: 280px; flex: 1; min-height: 100vh; }
+    .header { background: white; border-bottom: 2px solid var(--deep-blue); padding: 1.5rem 2rem; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 50; }
+    .header-title h1 { font-family: 'Amatic SC', cursive; font-size: 2rem; color: var(--deep-blue); }
+    .header-actions { display: flex; gap: 1rem; align-items: center; }
     
-    /* Header */
-    .header {
-      background: white;
-      border-bottom: 2px solid var(--deep-blue);
-      padding: 1.5rem 2rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      position: sticky;
-      top: 0;
-      z-index: 50;
-    }
-    
-    .header-title h1 {
-      font-family: 'Amatic SC', cursive;
-      font-size: 2rem;
-      color: var(--deep-blue);
-    }
-    
-    .header-actions {
-      display: flex;
-      gap: 1rem;
-      align-items: center;
-    }
-    
-    .btn {
-      padding: 0.625rem 1.25rem;
-      border: none;
-      border-radius: 0.5rem;
-      cursor: pointer;
-      font-family: 'Lora', serif;
-      font-size: 0.875rem;
-      transition: all 0.2s;
-    }
-    
-    .btn-primary {
-      background: var(--gold);
-      color: white;
-      font-weight: 600;
-    }
-    
-    .btn-primary:hover { background: #d97706; transform: translateY(-1px); }
-    
-    .btn-secondary {
-      background: var(--purple);
-      color: white;
-    }
-    
+    .btn { padding: 0.625rem 1.25rem; border: none; border-radius: 0.5rem; cursor: pointer; font-family: 'Lora', serif; font-size: 0.875rem; transition: all 0.2s; }
+    .btn-primary { background: var(--gold); color: white; font-weight: 600; }
+    .btn-primary:hover { background: #d97706; }
+    .btn-secondary { background: var(--purple); color: white; }
     .btn-secondary:hover { background: #6a1b9a; }
-    
     .btn-small { padding: 0.4rem 0.8rem; font-size: 0.8rem; }
     
-    .cart-btn {
-      position: relative;
-      background: var(--deep-blue);
-      color: white;
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
+    .cart-btn { position: relative; background: var(--deep-blue); color: white; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: none; }
+    .cart-count { position: absolute; top: -5px; right: -5px; background: var(--gold); color: white; width: 20px; height: 20px; border-radius: 50%; font-size: 0.75rem; display: flex; align-items: center; justify-content: center; font-weight: bold; }
     
-    .cart-count {
-      position: absolute;
-      top: -5px;
-      right: -5px;
-      background: var(--gold);
-      color: white;
-      width: 20px;
-      height: 20px;
-      border-radius: 50%;
-      font-size: 0.75rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: bold;
-    }
+    .content { padding: 2rem; max-width: 1400px; margin: 0 auto; }
+    .page-title { font-size: 2.5rem; color: var(--deep-blue); margin-bottom: 0.5rem; font-weight: 600; }
+    .page-subtitle { color: var(--purple); font-style: italic; margin-bottom: 2rem; font-size: 1.125rem; }
     
-    /* Content Container */
-    .content {
-      padding: 2rem;
-      max-width: 1400px;
-      margin: 0 auto;
-    }
+    .gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 2rem; margin-top: 2rem; }
+    .photo-card { background: white; border-radius: 0.5rem; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1); transition: all 0.3s; cursor: pointer; }
+    .photo-card:hover { transform: translateY(-4px); box-shadow: 0 8px 20px rgba(15,76,117,0.2); }
+    .photo-card img { width: 100%; height: 250px; object-fit: cover; }
+    .photo-info { padding: 1.25rem; }
+    .photo-info h3 { font-size: 1.125rem; color: var(--deep-blue); margin-bottom: 0.5rem; }
+    .photo-meta { display: flex; justify-content: space-between; align-items: center; color: #78716c; font-size: 0.875rem; }
+    .photo-price { color: var(--gold); font-weight: 600; font-size: 1rem; }
     
-    .page-title {
-      font-size: 2.5rem;
-      color: var(--deep-blue);
-      margin-bottom: 0.5rem;
-      font-weight: 600;
-    }
-    
-    .page-subtitle {
-      color: var(--purple);
-      font-style: italic;
-      margin-bottom: 2rem;
-      font-size: 1.125rem;
-    }
-    
-    /* Gallery */
-    .gallery-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-      gap: 2rem;
-      margin-top: 2rem;
-    }
-    
-    .photo-card {
-      background: white;
-      border-radius: 0.5rem;
-      overflow: hidden;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-      transition: all 0.3s;
-      cursor: pointer;
-    }
-    
-    .photo-card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 8px 20px rgba(15,76,117,0.2);
-    }
-    
-    .photo-card img {
-      width: 100%;
-      height: 250px;
-      object-fit: cover;
-    }
-    
-    .photo-info {
-      padding: 1.25rem;
-    }
-    
-    .photo-info h3 {
-      font-size: 1.125rem;
-      color: var(--deep-blue);
-      margin-bottom: 0.5rem;
-    }
-    
-    .photo-meta {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      color: #78716c;
-      font-size: 0.875rem;
-    }
-    
-    .photo-price {
-      color: var(--gold);
-      font-weight: 600;
-      font-size: 1rem;
-    }
-    
-    /* Blog */
-    .blog-grid {
-      display: grid;
-      gap: 2rem;
-      margin-top: 2rem;
-    }
-    
-    .blog-card {
-      background: white;
-      border-radius: 0.5rem;
-      overflow: hidden;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-      cursor: pointer;
-      transition: all 0.3s;
-    }
-    
-    .blog-card:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 20px rgba(74,20,140,0.15);
-    }
-    
-    .blog-card img {
-      width: 100%;
-      height: 300px;
-      object-fit: cover;
-    }
-    
-    .blog-content {
-      padding: 2rem;
-    }
-    
-    .blog-date {
-      color: var(--purple);
-      font-size: 0.875rem;
-      margin-bottom: 0.5rem;
-    }
-    
-    .blog-title {
-      font-size: 1.75rem;
-      color: var(--deep-blue);
-      margin-bottom: 1rem;
-    }
-    
-    .blog-excerpt {
-      color: #57534e;
-      line-height: 1.6;
-      margin-bottom: 1rem;
-    }
-    
-    /* Modal */
-    .modal {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.95);
-      z-index: 200;
-      align-items: center;
-      justify-content: center;
-      padding: 2rem;
-      overflow-y: auto;
-    }
-    
+    .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 200; align-items: center; justify-content: center; padding: 2rem; overflow-y: auto; }
     .modal.active { display: flex; }
-    
-    .modal-content {
-      background: white;
-      border-radius: 0.5rem;
-      max-width: 1000px;
-      width: 100%;
-      max-height: 90vh;
-      overflow-y: auto;
-      position: relative;
-      margin: auto;
-    }
-    
-    .modal-content img {
-      width: 100%;
-      max-height: 60vh;
-      object-fit: contain;
-    }
-    
-    .modal-info {
-      padding: 2rem;
-    }
-    
-    .modal-hook {
-      color: var(--gold);
-      font-style: italic;
-      font-size: 1.25rem;
-      margin-bottom: 1rem;
-    }
-    
-    .modal-title {
-      font-size: 2rem;
-      color: var(--deep-blue);
-      margin-bottom: 1rem;
-    }
-    
-    .modal-philosophy {
-      color: #57534e;
-      line-height: 1.8;
-      margin-bottom: 1.5rem;
-    }
-    
-    .modal-footer {
-      border-top: 1px solid #e7e5e4;
-      padding-top: 1.5rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    
-    .modal-price {
-      font-size: 1.75rem;
-      color: var(--gold);
-      font-weight: 600;
-    }
-    
-    .close-btn {
-      position: absolute;
-      top: 1rem;
-      right: 1rem;
-      background: white;
-      border: none;
-      width: 44px;
-      height: 44px;
-      border-radius: 50%;
-      font-size: 1.5rem;
-      cursor: pointer;
-      z-index: 10;
-      pointer-events: auto;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-    }
-    
+    .modal-content { background: white; border-radius: 0.5rem; max-width: 1000px; width: 100%; max-height: 90vh; overflow-y: auto; position: relative; margin: auto; }
+    .modal-content img { width: 100%; max-height: 60vh; object-fit: contain; }
+    .modal-info { padding: 2rem; }
+    .close-btn { position: absolute; top: 1rem; right: 1rem; background: white; border: none; width: 44px; height: 44px; border-radius: 50%; font-size: 1.5rem; cursor: pointer; z-index: 10; box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
     .close-btn:hover { background: #f5f5f5; }
     
-    /* Admin Panel */
-    .admin-panel {
-      background: white;
-      border-radius: 0.5rem;
-      padding: 2rem;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    }
+    .admin-panel { background: white; border-radius: 0.5rem; padding: 2rem; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+    .admin-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem; }
+    .admin-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 1.5rem; margin-top: 2rem; }
+    .admin-card { background: #fafaf9; border-radius: 0.5rem; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+    .admin-card img { width: 100%; height: 180px; object-fit: cover; }
+    .admin-card-content { padding: 1rem; }
+    .admin-actions { display: flex; gap: 0.5rem; margin-top: 0.75rem; }
     
-    .admin-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 2rem;
-      flex-wrap: wrap;
-      gap: 1rem;
-    }
+    .form-modal { padding: 2rem; max-width: 700px; }
+    .form-group { margin-bottom: 1.25rem; }
+    .form-group label { display: block; margin-bottom: 0.5rem; font-weight: 600; color: var(--deep-blue); }
+    .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 0.75rem; border: 1px solid #e7e5e4; border-radius: 0.5rem; font-family: 'Lora', serif; }
+    .form-group textarea { resize: vertical; min-height: 100px; }
+    .preview-img { width: 100%; height: 200px; object-fit: cover; border-radius: 0.5rem; margin-top: 0.75rem; }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
     
-    .version-info {
-      font-size: 0.875rem;
-      color: #78716c;
-      margin-top: 0.5rem;
-    }
-    
-    .admin-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-      gap: 1.5rem;
-      margin-top: 2rem;
-    }
-    
-    .admin-card {
-      background: #fafaf9;
-      border-radius: 0.5rem;
-      overflow: hidden;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-    }
-    
-    .admin-card img {
-      width: 100%;
-      height: 180px;
-      object-fit: cover;
-    }
-    
-    .admin-card-content {
-      padding: 1rem;
-    }
-    
-    .admin-card h4 {
-      color: var(--deep-blue);
-      margin-bottom: 0.5rem;
-    }
-    
-    .admin-actions {
-      display: flex;
-      gap: 0.5rem;
-      margin-top: 0.75rem;
-    }
-    
-    .btn-edit { background: #2563eb; color: white; }
-    .btn-delete { background: #dc2626; color: white; }
-    
-    /* Form */
-    .form-modal {
-      padding: 2rem;
-      max-width: 700px;
-      max-height: 90vh;
-      overflow-y: auto;
-    }
-    
-    .form-group {
-      margin-bottom: 1.25rem;
-    }
-    
-    .form-group label {
-      display: block;
-      margin-bottom: 0.5rem;
-      font-weight: 600;
-      color: var(--deep-blue);
-    }
-    
-    .form-group input,
-    .form-group select,
-    .form-group textarea {
-      width: 100%;
-      padding: 0.75rem;
-      border: 1px solid #e7e5e4;
-      border-radius: 0.5rem;
-      font-family: 'Lora', serif;
-      font-size: 0.95rem;
-    }
-    
-    .form-group input:focus,
-    .form-group select:focus,
-    .form-group textarea:focus {
-      outline: none;
-      border-color: var(--purple);
-    }
-    
-    .form-group textarea {
-      resize: vertical;
-      min-height: 100px;
-    }
-    
-    .preview-img {
-      width: 100%;
-      height: 200px;
-      object-fit: cover;
-      border-radius: 0.5rem;
-      margin-top: 0.75rem;
-    }
-    
-    .grid-2 {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 1rem;
-    }
-    
-    /* Login Modal */
-    .login-modal {
-      padding: 2.5rem;
-      max-width: 400px;
-      text-align: center;
-    }
-    
-    .login-modal h2 {
-      font-size: 1.75rem;
-      color: var(--deep-blue);
-      margin-bottom: 1.5rem;
-    }
-    
-    .login-modal input {
-      width: 100%;
-      padding: 0.875rem;
-      border: 1px solid #e7e5e4;
-      border-radius: 0.5rem;
-      margin-bottom: 1rem;
-      font-family: 'Lora', serif;
-    }
-    
-    /* Mobile Responsiveness */
     @media (max-width: 768px) {
-      .sidebar {
-        transform: translateX(-100%);
-      }
-      
-      .sidebar.mobile-open {
-        transform: translateX(0);
-      }
-      
-      .main-content {
-        margin-left: 0;
-      }
-      
-      .gallery-grid {
-        grid-template-columns: 1fr;
-      }
-      
-      .grid-2 {
-        grid-template-columns: 1fr;
-      }
+      .sidebar { transform: translateX(-100%); }
+      .main-content { margin-left: 0; }
+      .gallery-grid { grid-template-columns: 1fr; }
     }
   </style>
 </head>
 <body>
   <div class="app-container">
-    <!-- Sidebar -->
-    <aside class="sidebar" id="sidebar">
+    <aside class="sidebar">
       <div class="sidebar-header">
-        <!-- Your Logo SVG -->
         <svg class="logo-img" viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg">
           <rect width="500" height="500" fill="#0f4c75"/>
           <path d="M 40 40 L 40 140 L 50 140 L 50 50 L 140 50 L 140 40 Z" fill="#f5f5f5"/>
@@ -556,91 +99,53 @@
           <path d="M 360 450 L 360 460 L 460 460 L 460 360 L 450 360 L 450 450 Z" fill="#f5f5f5"/>
           <circle cx="250" cy="230" r="140" fill="#f5f5f5"/>
           <g transform="translate(180, 150)">
-            <path d="M 60 50 L 75 35 L 72 50 L 78 35 L 75 50 L 90 65 L 90 88 L 75 95 L 45 95 L 30 88 L 30 65 Z" fill="none" stroke="#0f4c75" stroke-width="2.5" stroke-linejoin="miter"/>
-            <path d="M 57 50 L 60 30 L 63 50" fill="none" stroke="#0f4c75" stroke-width="2.5"/>
-            <path d="M 72 50 L 75 30 L 78 50" fill="none" stroke="#0f4c75" stroke-width="2.5"/>
-            <path d="M 82 68 L 92 71 L 82 74" fill="none" stroke="#0f4c75" stroke-width="2.5"/>
+            <path d="M 60 50 L 75 35 L 72 50 L 78 35 L 75 50 L 90 65 L 90 88 L 75 95 L 45 95 L 30 88 L 30 65 Z" fill="none" stroke="#0f4c75" stroke-width="2.5"/>
             <circle cx="72" cy="65" r="2" fill="#0f4c75"/>
-            <path d="M 45 95 L 38 110 L 45 125 L 75 125 L 82 110 L 75 95" fill="none" stroke="#0f4c75" stroke-width="2.5"/>
-            <path d="M 45 125 L 30 145 L 38 170 L 82 170 L 90 145 L 75 125" fill="none" stroke="#0f4c75" stroke-width="2.5"/>
-            <path d="M 45 162 L 42 190 M 50 190 L 42 190 L 42 193" fill="none" stroke="#0f4c75" stroke-width="2.5"/>
-            <path d="M 75 162 L 78 190 M 70 190 L 78 190 L 78 193" fill="none" stroke="#0f4c75" stroke-width="2.5"/>
-            <path d="M 38 155 Q 18 160 22 178 Q 26 188 33 182" fill="none" stroke="#0f4c75" stroke-width="2.5"/>
-            <ellipse cx="60" cy="193" rx="30" ry="5" fill="none" stroke="#0f4c75" stroke-width="2.5"/>
           </g>
           <g transform="translate(280, 160)">
-            <rect x="12" y="35" width="30" height="22" rx="1" fill="none" stroke="#7a9eb5" stroke-width="2"/>
             <circle cx="12" cy="46" r="10" fill="none" stroke="#7a9eb5" stroke-width="2"/>
-            <circle cx="12" cy="46" r="6" fill="none" stroke="#7a9eb5" stroke-width="1.5"/>
-            <circle cx="12" cy="46" r="3" fill="none" stroke="#7a9eb5" stroke-width="1.5"/>
-            <rect x="34" y="31" width="12" height="8" rx="1" fill="none" stroke="#7a9eb5" stroke-width="1.5"/>
-            <rect x="22" y="57" width="12" height="4" rx="1" fill="none" stroke="#7a9eb5" stroke-width="1.5"/>
-            <line x1="25" y1="61" x2="15" y2="100" stroke="#7a9eb5" stroke-width="2"/>
-            <line x1="28" y1="61" x2="28" y2="103" stroke="#7a9eb5" stroke-width="2"/>
-            <line x1="31" y1="61" x2="41" y2="100" stroke="#7a9eb5" stroke-width="2"/>
-            <line x1="12" y1="100" x2="18" y2="100" stroke="#7a9eb5" stroke-width="2"/>
-            <line x1="25" y1="103" x2="31" y2="103" stroke="#7a9eb5" stroke-width="2"/>
-            <line x1="38" y1="100" x2="44" y2="100" stroke="#7a9eb5" stroke-width="2"/>
           </g>
-          <text x="250" y="420" font-family="'Amatic SC', cursive" font-size="46" fill="#f5f5f5" text-anchor="middle" font-weight="bold">Grumpy Iyer</text>
-          <text x="250" y="455" font-family="'Amatic SC', cursive" font-size="32" fill="#7a9eb5" text-anchor="middle">Viewfinder</text>
+          <text x="250" y="420" font-family="'Amatic SC'" font-size="46" fill="#f5f5f5" text-anchor="middle">Grumpy Iyer</text>
+          <text x="250" y="455" font-family="'Amatic SC'" font-size="32" fill="#7a9eb5" text-anchor="middle">Viewfinder</text>
         </svg>
       </div>
-      
-      <nav class="sidebar-nav" id="sidebarNav">
-        <div class="nav-item active" data-page="home">🏠 Home</div>
-        <div class="nav-item nav-folder" data-page="square-one">📸 Square One</div>
-        <div class="nav-item nav-folder" data-page="wildlife">🦁 Wildlife</div>
-        <div class="nav-item nav-subfolder" data-page="wildlife-africa">Africa Safari</div>
-        <div class="nav-item nav-subfolder" data-page="wildlife-birds">Birds</div>
-        <div class="nav-item nav-subfolder" data-page="wildlife-mammals">Big Cats</div>
-        <div class="nav-item nav-folder" data-page="landscapes">🏔️ Landscapes</div>
-        <div class="nav-item nav-subfolder" data-page="landscapes-sunsets">Sunsets</div>
-        <div class="nav-item nav-subfolder" data-page="landscapes-mountains">Mountains</div>
-        <div class="nav-item nav-folder" data-page="blog">✍️ The Viewfinder</div>
-        <div class="nav-item" data-page="about">📖 About</div>
-        <div class="nav-item" data-page="contact">📧 Contact</div>
-        <div class="nav-item" data-page="admin" id="adminNavItem" style="display:none;">⚙️ Admin</div>
+      <nav class="sidebar-nav">
+        <div class="nav-item active" onclick="navigateTo('home')">🏠 Home</div>
+        <div class="nav-item" onclick="navigateTo('wildlife')">🦁 Wildlife</div>
+        <div class="nav-item" onclick="navigateTo('landscapes')">🏔️ Landscapes</div>
+        <div class="nav-item" onclick="navigateTo('blog')">✍️ The Viewfinder</div>
+        <div class="nav-item" onclick="navigateTo('about')">📖 About</div>
+        <div class="nav-item" onclick="navigateTo('contact')">📧 Contact</div>
+        <div class="nav-item" id="adminNav" style="display:none;" onclick="navigateTo('admin')">⚙️ Admin</div>
       </nav>
     </aside>
 
-    <!-- Main Content -->
     <main class="main-content">
-      <!-- Header -->
       <header class="header">
         <div class="header-title">
           <h1>Grumpy Iyer Viewfinder</h1>
           <p style="font-size:0.875rem;color:var(--purple);font-style:italic;">Photography & Philosophy</p>
         </div>
         <div class="header-actions">
-          <button class="btn btn-secondary" id="loginBtn">🔒 Admin</button>
-          <button class="cart-btn" id="cartBtn">
+          <button class="btn btn-secondary" id="loginBtn" onclick="showLoginModal()">🔒 Admin</button>
+          <button class="cart-btn" onclick="showCart()">
             🛒
             <span class="cart-count" id="cartCount" style="display:none;"></span>
           </button>
         </div>
       </header>
-
-      <!-- Content Area -->
       <div class="content" id="contentArea"></div>
     </main>
   </div>
 
-  <!-- Photo Detail Modal -->
   <div id="photoModal" class="modal"></div>
-  
-  <!-- Photo Form Modal -->
   <div id="formModal" class="modal"></div>
-  
-  <!-- Login Modal -->
   <div id="loginModal" class="modal"></div>
-  
-  <!-- Cart Modal -->
   <div id="cartModal" class="modal"></div>
-  
+
   <script>
     const VERSION = 'Oct 21, 2024 - 10:14 PM EST';
-    const BUILD = '2024.10.21.001';
+    const BUILD = '2024.10.21.002';
     const ADMIN_PASSWORD = 'grumpy2024';
     const CLOUDINARY_CLOUD_NAME = 'dzudd8xbx';
     const CLOUDINARY_UPLOAD_PRESET = 'grumpyiyer_unsigned';
@@ -650,83 +155,32 @@
     let isAdmin = false;
     let cart = [];
     let photos = JSON.parse(localStorage.getItem('grumpyiyer_photos')) || [];
-    let blogPosts = JSON.parse(localStorage.getItem('grumpyiyer_blog')) || [];
     let editingPhoto = null;
-    let editingBlogPost = null;
     
-    // Initialize
-    function init() {
-      console.log('Initializing app...');
-      setupNavigation();
-      setupImageProtection();
-      setupEventListeners();
+    function navigateTo(page) {
+      console.log('Navigating to:', page);
+      document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+      event.target.classList.add('active');
+      currentPage = page;
       renderCurrentPage();
-      console.log('App initialized successfully');
-    }
-    
-    function setupNavigation() {
-      console.log('Setting up navigation...');
-      const navItems = document.querySelectorAll('.nav-item');
-      console.log('Found nav items:', navItems.length);
-      
-      navItems.forEach(item => {
-        item.addEventListener('click', function() {
-          console.log('Clicked:', this.dataset.page);
-          document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
-          this.classList.add('active');
-          currentPage = this.dataset.page;
-          renderCurrentPage();
-        });
-      });
-    }
-    
-    function setupEventListeners() {
-      console.log('Setting up event listeners...');
-      const loginBtn = document.getElementById('loginBtn');
-      const cartBtn = document.getElementById('cartBtn');
-      
-      if (loginBtn) {
-        loginBtn.addEventListener('click', function() {
-          console.log('Login button clicked');
-          showLoginModal();
-        });
-        console.log('Login button listener attached');
-      }
-      
-      if (cartBtn) {
-        cartBtn.addEventListener('click', function() {
-          console.log('Cart button clicked');
-          showCart();
-        });
-        console.log('Cart button listener attached');
-      }
     }
     
     function renderCurrentPage() {
       const content = document.getElementById('contentArea');
-      
       switch(currentPage) {
         case 'home':
           content.innerHTML = `
             <h2 class="page-title">Welcome to My Viewfinder</h2>
             <p class="page-subtitle">Where Wildlife Meets Witness Consciousness</p>
-            <div class="gallery-grid" id="galleryGrid"></div>
+            <div class="gallery-grid" id="gallery"></div>
           `;
           renderGallery(photos);
-          break;
-        case 'square-one':
-          content.innerHTML = `
-            <h2 class="page-title">Square One</h2>
-            <p class="page-subtitle">My Signature Collection</p>
-            <div class="gallery-grid" id="galleryGrid"></div>
-          `;
-          renderGallery(photos.filter(p => p.category === 'Square One'));
           break;
         case 'wildlife':
           content.innerHTML = `
             <h2 class="page-title">Wildlife Photography</h2>
             <p class="page-subtitle">Nature's Untamed Beauty</p>
-            <div class="gallery-grid" id="galleryGrid"></div>
+            <div class="gallery-grid" id="gallery"></div>
           `;
           renderGallery(photos.filter(p => p.category === 'Wildlife'));
           break;
@@ -734,335 +188,237 @@
           content.innerHTML = `
             <h2 class="page-title">Landscapes</h2>
             <p class="page-subtitle">Earth's Serene Expressions</p>
-            <div class="gallery-grid" id="galleryGrid"></div>
+            <div class="gallery-grid" id="gallery"></div>
           `;
           renderGallery(photos.filter(p => p.category === 'Landscape'));
           break;
         case 'blog':
           content.innerHTML = `
             <h2 class="page-title">The Viewfinder</h2>
-            <p class="page-subtitle">Essays on Photography, Nature & Non-Duality</p>
-            ${isAdmin ? '<button class="btn btn-primary" onclick="showBlogForm()">+ New Post</button>' : ''}
-            <div class="blog-grid" id="blogGrid"></div>
+            <p class="page-subtitle">Essays on Photography & Philosophy</p>
+            <p style="color:#78716c;">Blog posts coming soon!</p>
           `;
-          renderBlog();
           break;
         case 'about':
-          renderAbout();
+          content.innerHTML = `
+            <h2 class="page-title">About</h2>
+            <div style="max-width:800px;background:white;padding:2rem;border-radius:0.5rem;">
+              <p style="line-height:1.8;color:#57534e;margin-bottom:1.5rem;">Through the lens, I seek the silence between forms.</p>
+            </div>
+          `;
           break;
         case 'contact':
-          renderContact();
+          content.innerHTML = `
+            <h2 class="page-title">Contact</h2>
+            <div style="max-width:600px;background:white;padding:2rem;border-radius:0.5rem;">
+              <p>Email: grumpyiyer@example.com</p>
+            </div>
+          `;
           break;
         case 'admin':
-          if (isAdmin) renderAdmin();
-          else {
-            content.innerHTML = '<p>Please login to access admin panel.</p>';
+          if (!isAdmin) {
+            content.innerHTML = '<p>Please login</p>';
+            return;
           }
-          break;
-        default:
           content.innerHTML = `
-            <h2 class="page-title">${currentPage.replace('-', ' ').toUpperCase()}</h2>
-            <p class="page-subtitle">Coming Soon</p>
+            <div class="admin-panel">
+              <div class="admin-header">
+                <div>
+                  <h2 style="color:var(--deep-blue);">Admin Panel</h2>
+                  <p style="font-size:0.875rem;color:#78716c;">Build: ${BUILD}</p>
+                </div>
+                <button class="btn btn-primary" onclick="showPhotoForm()">+ Add Photo</button>
+              </div>
+              <div class="admin-grid" id="adminGrid"></div>
+            </div>
           `;
+          renderAdminPhotos();
+          break;
       }
     }
     
     function renderGallery(photoList) {
       const html = photoList.map(p => `
-        <div class="photo-card" onclick="openPhotoModal(${p.id})">
+        <div class="photo-card" onclick="openPhoto(${p.id})">
           <img src="${p.url}" alt="${p.title}">
           <div class="photo-info">
             <h3>${p.title}</h3>
             <div class="photo-meta">
-              <span>${p.category || 'Photography'}</span>
+              <span>${p.category || 'Photo'}</span>
               <span class="photo-price">$${p.price}</span>
             </div>
           </div>
         </div>
       `).join('');
-      document.getElementById('galleryGrid').innerHTML = html || '<p style="color:#78716c;">No photos yet. ' + (isAdmin ? 'Add some in the admin panel!' : 'Check back soon!') + '</p>';
-    }
-    
-    function renderBlog() {
-      const html = blogPosts.map(post => `
-        <div class="blog-card" onclick="openBlogPost(${post.id})">
-          ${post.image ? `<img src="${post.image}" alt="${post.title}">` : ''}
-          <div class="blog-content">
-            <div class="blog-date">${post.date}</div>
-            <h3 class="blog-title">${post.title}</h3>
-            <p class="blog-excerpt">${post.excerpt}</p>
-          </div>
-        </div>
-      `).join('');
-      document.getElementById('blogGrid').innerHTML = html || '<p style="color:#78716c;">No blog posts yet. ' + (isAdmin ? 'Create your first post!' : 'Check back soon!') + '</p>';
-    }
-    
-    function renderAbout() {
-      document.getElementById('contentArea').innerHTML = `
-        <h2 class="page-title">About</h2>
-        <p class="page-subtitle">The Photographer Behind the Lens</p>
-        <div style="max-width:800px;background:white;padding:2rem;border-radius:0.5rem;box-shadow:0 2px 8px rgba(0,0,0,0.1);">
-          <p style="line-height:1.8;color:#57534e;margin-bottom:1.5rem;">
-            Through the lens, I seek the silence between forms - the space where the observer and observed dissolve into one awareness.
-          </p>
-          <p style="line-height:1.8;color:#57534e;margin-bottom:1.5rem;">
-            My photography is an exploration of Advaita Vedanta philosophy through the natural world. Each image is an invitation to witness consciousness, to recognize the oneness that underlies all apparent diversity.
-          </p>
-          <p style="line-height:1.8;color:#57534e;">
-            The wildlife I photograph exists in perfect harmony with its environment - not through effort, but through simply being what it is. This is the teaching: to rest in our true nature, undivided and complete.
-          </p>
-        </div>
-      `;
-    }
-    
-    function renderContact() {
-      document.getElementById('contentArea').innerHTML = `
-        <h2 class="page-title">Contact</h2>
-        <p class="page-subtitle">Get in Touch</p>
-        <div style="max-width:600px;background:white;padding:2rem;border-radius:0.5rem;box-shadow:0 2px 8px rgba(0,0,0,0.1);">
-          <p style="margin-bottom:1rem;color:#57534e;">Email: grumpyiyer@example.com</p>
-          <p style="color:#57534e;">Social: @grumpyiyer</p>
-        </div>
-      `;
-    }
-    
-    function renderAdmin() {
-      document.getElementById('contentArea').innerHTML = `
-        <div class="admin-panel">
-          <div class="admin-header">
-            <div>
-              <h2 style="color:var(--deep-blue);font-size:2rem;">Admin Panel</h2>
-              <div class="version-info">
-                Deployed: ${VERSION}<br>
-                Build: ${BUILD}
-              </div>
-            </div>
-            <div style="display:flex;gap:1rem;flex-wrap:wrap;">
-              <button class="btn btn-primary" onclick="showPhotoForm()">+ Add Photo</button>
-              <button class="btn btn-secondary" onclick="showSettingsPanel()">⚙️ Settings</button>
-              <button class="btn btn-secondary" onclick="logout()">Logout</button>
-            </div>
-          </div>
-          
-          <h3 style="color:var(--deep-blue);margin-bottom:1rem;font-size:1.5rem;">Manage Photos</h3>
-          <div class="admin-grid" id="adminPhotoGrid"></div>
-        </div>
-      `;
-      renderAdminPhotos();
+      document.getElementById('gallery').innerHTML = html || '<p>No photos yet</p>';
     }
     
     function renderAdminPhotos() {
       const html = photos.map(p => `
         <div class="admin-card">
-          <img src="${p.url}" alt="${p.title}">
+          <img src="${p.url}">
           <div class="admin-card-content">
             <h4>${p.title}</h4>
-            <p style="color:#78716c;font-size:0.875rem;margin-bottom:0.5rem;">${p.category || 'Uncategorized'} · ${p.price}</p>
+            <p style="font-size:0.875rem;color:#78716c;">${p.category} · $${p.price}</p>
             <div class="admin-actions">
-              <button class="btn btn-small btn-edit" onclick="editPhoto(${p.id})">Edit</button>
-              <button class="btn btn-small btn-delete" onclick="deletePhoto(${p.id})">Delete</button>
+              <button class="btn btn-small btn-secondary" onclick="editPhoto(${p.id})">Edit</button>
+              <button class="btn btn-small" style="background:#dc2626;color:white;" onclick="deletePhoto(${p.id})">Delete</button>
             </div>
           </div>
         </div>
       `).join('');
-      document.getElementById('adminPhotoGrid').innerHTML = html || '<p>No photos yet.</p>';
+      document.getElementById('adminGrid').innerHTML = html || '<p>No photos</p>';
     }
     
     function showLoginModal() {
       const modal = document.getElementById('loginModal');
       modal.innerHTML = `
-        <div class="modal-content login-modal" onclick="event.stopPropagation()">
-          <button class="close-btn" onclick="closeLoginModal()">×</button>
-          <h2>Admin Login</h2>
-          <input type="password" id="passwordInput" placeholder="Enter password" onkeypress="if(event.key==='Enter') handleLogin()">
+        <div class="modal-content form-modal" onclick="event.stopPropagation()">
+          <button class="close-btn" onclick="closeModal('loginModal')">×</button>
+          <h2 style="color:var(--deep-blue);margin-bottom:1.5rem;">Admin Login</h2>
+          <input type="password" id="passwordInput" placeholder="Password" style="width:100%;padding:0.75rem;border:1px solid #e7e5e4;border-radius:0.5rem;margin-bottom:1rem;">
           <button class="btn btn-primary" style="width:100%;" onclick="handleLogin()">Login</button>
         </div>
       `;
       modal.classList.add('active');
-      modal.onclick = (e) => { if (e.target === modal) closeLoginModal(); };
-      setTimeout(() => document.getElementById('passwordInput').focus(), 100);
-    }
-    
-    function closeLoginModal() {
-      document.getElementById('loginModal').classList.remove('active');
+      modal.onclick = (e) => { if(e.target === modal) closeModal('loginModal'); };
     }
     
     function handleLogin() {
-      const password = document.getElementById('passwordInput').value;
-      if (password === ADMIN_PASSWORD) {
+      const pwd = document.getElementById('passwordInput').value;
+      if (pwd === ADMIN_PASSWORD) {
         isAdmin = true;
-        document.getElementById('adminNavItem').style.display = 'block';
+        document.getElementById('adminNav').style.display = 'block';
         document.getElementById('loginBtn').innerHTML = '🔓 Logout';
         document.getElementById('loginBtn').onclick = logout;
-        closeLoginModal();
-        currentPage = 'admin';
-        document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
-        document.getElementById('adminNavItem').classList.add('active');
-        renderCurrentPage();
+        closeModal('loginModal');
+        navigateTo('admin');
       } else {
-        alert('Incorrect password');
+        alert('Wrong password');
       }
     }
     
     function logout() {
       isAdmin = false;
-      document.getElementById('adminNavItem').style.display = 'none';
+      document.getElementById('adminNav').style.display = 'none';
       document.getElementById('loginBtn').innerHTML = '🔒 Admin';
       document.getElementById('loginBtn').onclick = showLoginModal;
-      currentPage = 'home';
-      document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
-      document.querySelector('.nav-item[data-page="home"]').classList.add('active');
-      renderCurrentPage();
+      navigateTo('home');
     }
     
-    function showPhotoForm(photoId = null) {
-      editingPhoto = photoId ? photos.find(p => p.id === photoId) : null;
+    function showPhotoForm(id = null) {
+      editingPhoto = id ? photos.find(p => p.id === id) : null;
       const modal = document.getElementById('formModal');
       modal.innerHTML = `
         <div class="modal-content form-modal" onclick="event.stopPropagation()">
-          <button class="close-btn" onclick="closePhotoForm()">×</button>
-          <h2 style="color:var(--deep-blue);margin-bottom:1.5rem;">${editingPhoto ? 'Edit Photo' : 'Add New Photo'}</h2>
-          <form id="photoForm" onsubmit="savePhoto(event)">
+          <button class="close-btn" onclick="closeModal('formModal')">×</button>
+          <h2 style="color:var(--deep-blue);margin-bottom:1.5rem;">${editingPhoto ? 'Edit' : 'Add'} Photo</h2>
+          <div class="form-group">
+            <label>Photo</label>
+            <input type="file" id="photoFile" accept="image/*">
+            ${editingPhoto ? `<img src="${editingPhoto.url}" class="preview-img" id="preview">` : '<img id="preview" class="preview-img" style="display:none;">'}
+          </div>
+          <div class="form-group">
+            <label>Title</label>
+            <input type="text" id="photoTitle" value="${editingPhoto?.title || ''}">
+          </div>
+          <div class="grid-2">
             <div class="form-group">
-              <label>Photo Upload</label>
-              <input type="file" id="photoFile" accept="image/*" ${editingPhoto ? '' : 'required'}>
-              ${editingPhoto ? `<img src="${editingPhoto.url}" class="preview-img" id="previewImg">` : '<img id="previewImg" class="preview-img" style="display:none;">'}
-            </div>
-            <div class="form-group">
-              <label>Title *</label>
-              <input type="text" id="photoTitle" value="${editingPhoto?.title || ''}" required>
-            </div>
-            <div class="grid-2">
-              <div class="form-group">
-                <label>Category</label>
-                <select id="photoCategory">
-                  <option ${editingPhoto?.category === 'Wildlife' ? 'selected' : ''}>Wildlife</option>
-                  <option ${editingPhoto?.category === 'Landscape' ? 'selected' : ''}>Landscape</option>
-                  <option ${editingPhoto?.category === 'Square One' ? 'selected' : ''}>Square One</option>
-                </select>
-              </div>
-              <div class="form-group">
-                <label>Price ($)</label>
-                <input type="number" id="photoPrice" value="${editingPhoto?.price || 150}">
-              </div>
+              <label>Category</label>
+              <select id="photoCategory">
+                <option ${editingPhoto?.category === 'Wildlife' ? 'selected' : ''}>Wildlife</option>
+                <option ${editingPhoto?.category === 'Landscape' ? 'selected' : ''}>Landscape</option>
+              </select>
             </div>
             <div class="form-group">
-              <label>Hook Line</label>
-              <input type="text" id="photoHook" value="${editingPhoto?.hookLine || ''}" placeholder="A captivating phrase...">
+              <label>Price</label>
+              <input type="number" id="photoPrice" value="${editingPhoto?.price || 150}">
             </div>
-            <div class="form-group">
-              <label>Philosophy / Description</label>
-              <textarea id="photoPhilosophy" rows="5">${editingPhoto?.philosophy || ''}</textarea>
-            </div>
-            <button type="submit" class="btn btn-primary" style="width:100%;">Save Photo</button>
-          </form>
+          </div>
+          <div class="form-group">
+            <label>Hook Line</label>
+            <input type="text" id="photoHook" value="${editingPhoto?.hookLine || ''}">
+          </div>
+          <div class="form-group">
+            <label>Philosophy</label>
+            <textarea id="photoPhilosophy">${editingPhoto?.philosophy || ''}</textarea>
+          </div>
+          <button class="btn btn-primary" style="width:100%;" onclick="savePhoto()">Save</button>
         </div>
       `;
       modal.classList.add('active');
-      modal.onclick = (e) => { if (e.target === modal) closePhotoForm(); };
+      modal.onclick = (e) => { if(e.target === modal) closeModal('formModal'); };
       
       document.getElementById('photoFile').onchange = (e) => {
         const file = e.target.files[0];
         if (file) {
           const reader = new FileReader();
           reader.onload = (e) => {
-            document.getElementById('previewImg').src = e.target.result;
-            document.getElementById('previewImg').style.display = 'block';
+            document.getElementById('preview').src = e.target.result;
+            document.getElementById('preview').style.display = 'block';
           };
           reader.readAsDataURL(file);
         }
       };
     }
     
-    function closePhotoForm() {
-      document.getElementById('formModal').classList.remove('active');
-      editingPhoto = null;
-    }
-    
-    function savePhoto(e) {
-      e.preventDefault();
+    function savePhoto() {
+      const file = document.getElementById('photoFile').files[0];
+      const btn = event.target;
       
-      const fileInput = document.getElementById('photoFile');
-      const previewImg = document.getElementById('previewImg');
-      
-      if (editingPhoto && fileInput.files.length === 0) {
-        savePhotoMetadata(previewImg.src);
+      if (!file && !editingPhoto) {
+        alert('Select a photo');
         return;
       }
       
-      if (!fileInput.files || fileInput.files.length === 0) {
-        alert('Please select a photo!');
+      if (!file && editingPhoto) {
+        savePhotoData(editingPhoto.url);
         return;
       }
       
-      const file = fileInput.files[0];
-      const submitBtn = document.querySelector('#photoForm button[type="submit"]');
-      submitBtn.textContent = 'Uploading to Cloudinary...';
-      submitBtn.disabled = true;
+      btn.textContent = 'Uploading...';
+      btn.disabled = true;
       
-      uploadToCloudinary(file)
-        .then(cloudinaryUrl => {
-          savePhotoMetadata(cloudinaryUrl);
-          submitBtn.textContent = 'Save Photo';
-          submitBtn.disabled = false;
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+      formData.append('folder', 'photography');
+      
+      fetch(CLOUDINARY_UPLOAD_URL, { method: 'POST', body: formData })
+        .then(r => r.json())
+        .then(data => {
+          savePhotoData(data.secure_url);
+          btn.textContent = 'Save';
+          btn.disabled = false;
         })
-        .catch(error => {
-          console.error('Upload error:', error);
-          alert('Failed to upload. Please try again.');
-          submitBtn.textContent = 'Save Photo';
-          submitBtn.disabled = false;
+        .catch(err => {
+          alert('Upload failed');
+          btn.textContent = 'Save';
+          btn.disabled = false;
         });
     }
     
-    function uploadToCloudinary(file) {
-      return new Promise((resolve, reject) => {
-        const formData = new FormData();
-        formData.append('file', file);
-        formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
-        formData.append('folder', 'photography');
-        
-        fetch(CLOUDINARY_UPLOAD_URL, {
-          method: 'POST',
-          body: formData
-        })
-        .then(response => response.json())
-        .then(data => {
-          if (data.secure_url) {
-            resolve(data.secure_url);
-          } else {
-            reject(new Error('No URL in response'));
-          }
-        })
-        .catch(error => reject(error));
-      });
-    }
-    
-    function savePhotoMetadata(photoUrl) {
-      const newId = editingPhoto ? editingPhoto.id : Date.now();
-      
+    function savePhotoData(url) {
       const photo = {
-        id: newId,
+        id: editingPhoto ? editingPhoto.id : Date.now(),
         title: document.getElementById('photoTitle').value,
         category: document.getElementById('photoCategory').value,
         price: parseInt(document.getElementById('photoPrice').value),
-        hookLine: document.getElementById('photoHook').value || '',
-        philosophy: document.getElementById('photoPhilosophy').value || '',
-        url: photoUrl,
-        likes: editingPhoto ? editingPhoto.likes : 0
+        hookLine: document.getElementById('photoHook').value,
+        philosophy: document.getElementById('photoPhilosophy').value,
+        url: url
       };
       
       if (editingPhoto) {
-        const index = photos.findIndex(p => p.id === editingPhoto.id);
-        if (index !== -1) {
-          photos[index] = photo;
-        }
+        const idx = photos.findIndex(p => p.id === editingPhoto.id);
+        photos[idx] = photo;
       } else {
         photos.push(photo);
       }
       
       localStorage.setItem('grumpyiyer_photos', JSON.stringify(photos));
-      closePhotoForm();
-      renderAdmin();
+      closeModal('formModal');
+      renderCurrentPage();
     }
     
     function editPhoto(id) {
@@ -1070,176 +426,93 @@
     }
     
     function deletePhoto(id) {
-      if (confirm('Delete this photo?')) {
+      if (confirm('Delete?')) {
         photos = photos.filter(p => p.id !== id);
         localStorage.setItem('grumpyiyer_photos', JSON.stringify(photos));
-        renderAdmin();
+        renderCurrentPage();
       }
     }
     
-    function showSettingsPanel() {
-      const modal = document.getElementById('formModal');
-      modal.innerHTML = `
-        <div class="modal-content form-modal" onclick="event.stopPropagation()">
-          <button class="close-btn" onclick="document.getElementById('formModal').classList.remove('active')">×</button>
-          <h2 style="color:var(--deep-blue);margin-bottom:1.5rem;">Website Settings</h2>
-          
-          <div class="form-group">
-            <label>Logo Upload (Coming Soon)</label>
-            <input type="file" accept="image/*" disabled>
-            <p style="font-size:0.875rem;color:#78716c;margin-top:0.5rem;">Custom logo upload will be available in next update</p>
-          </div>
-          
-          <div class="form-group">
-            <label>Primary Font (Coming Soon)</label>
-            <select disabled>
-              <option>Lora (Current)</option>
-              <option>Merriweather</option>
-              <option>Playfair Display</option>
-            </select>
-          </div>
-          
-          <div class="form-group">
-            <label>Manage Folders/Categories (Coming Soon)</label>
-            <p style="font-size:0.875rem;color:#78716c;">Folder management will be available in next update</p>
-          </div>
-          
-          <p style="color:var(--purple);font-style:italic;margin-top:1rem;">These features are being built and will be available soon!</p>
-        </div>
-      `;
-      modal.classList.add('active');
-      modal.onclick = (e) => { if (e.target === modal) modal.classList.remove('active'); };
-    }
-    
-    function openPhotoModal(id) {
-      const photo = photos.find(p => p.id === id);
-      if (!photo) return;
-      
+    function openPhoto(id) {
+      const p = photos.find(x => x.id === id);
+      if (!p) return;
       const modal = document.getElementById('photoModal');
       modal.innerHTML = `
         <div class="modal-content" onclick="event.stopPropagation()">
-          <button class="close-btn" onclick="document.getElementById('photoModal').classList.remove('active')">×</button>
-          <img src="${photo.url}" alt="${photo.title}">
+          <button class="close-btn" onclick="closeModal('photoModal')">×</button>
+          <img src="${p.url}">
           <div class="modal-info">
-            ${photo.hookLine ? `<p class="modal-hook">${photo.hookLine}</p>` : ''}
-            <h2 class="modal-title">${photo.title}</h2>
-            ${photo.philosophy ? `<p class="modal-philosophy">${photo.philosophy}</p>` : ''}
-            <div class="modal-footer">
-              <span class="modal-price">${photo.price}</span>
-              <button class="btn btn-primary" onclick="addToCart(${photo.id})">Add to Cart</button>
+            ${p.hookLine ? `<p style="color:var(--gold);font-style:italic;font-size:1.25rem;">${p.hookLine}</p>` : ''}
+            <h2 style="color:var(--deep-blue);font-size:2rem;margin:1rem 0;">${p.title}</h2>
+            ${p.philosophy ? `<p style="color:#57534e;line-height:1.8;margin-bottom:1.5rem;">${p.philosophy}</p>` : ''}
+            <div style="border-top:1px solid #e7e5e4;padding-top:1.5rem;display:flex;justify-content:space-between;">
+              <span style="font-size:1.75rem;color:var(--gold);">$${p.price}</span>
+              <button class="btn btn-primary" onclick="addToCart(${p.id})">Add to Cart</button>
             </div>
           </div>
         </div>
       `;
       modal.classList.add('active');
-      modal.onclick = (e) => { if (e.target === modal) modal.classList.remove('active'); };
+      modal.onclick = (e) => { if(e.target === modal) closeModal('photoModal'); };
     }
     
-    function addToCart(photoId) {
-      const photo = photos.find(p => p.id === photoId);
-      if (!photo) return;
-      
-      const existing = cart.find(item => item.id === photoId);
+    function addToCart(id) {
+      const p = photos.find(x => x.id === id);
+      if (!p) return;
+      const existing = cart.find(item => item.id === id);
       if (existing) {
         existing.quantity++;
       } else {
-        cart.push({ ...photo, quantity: 1 });
+        cart.push({ ...p, quantity: 1 });
       }
       updateCartCount();
-      document.getElementById('photoModal').classList.remove('active');
+      closeModal('photoModal');
     }
     
     function updateCartCount() {
       const count = cart.reduce((sum, item) => sum + item.quantity, 0);
-      const countEl = document.getElementById('cartCount');
+      const el = document.getElementById('cartCount');
       if (count > 0) {
-        countEl.textContent = count;
-        countEl.style.display = 'flex';
+        el.textContent = count;
+        el.style.display = 'flex';
       } else {
-        countEl.style.display = 'none';
+        el.style.display = 'none';
       }
     }
     
     function showCart() {
-      const modal = document.getElementById('cartModal');
       const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-      
+      const modal = document.getElementById('cartModal');
       modal.innerHTML = `
         <div class="modal-content form-modal" onclick="event.stopPropagation()">
-          <button class="close-btn" onclick="document.getElementById('cartModal').classList.remove('active')">×</button>
-          <h2 style="color:var(--deep-blue);margin-bottom:1.5rem;">Shopping Cart</h2>
-          
-          ${cart.length === 0 ? '<p style="text-align:center;color:#78716c;padding:2rem;">Your cart is empty</p>' : `
+          <button class="close-btn" onclick="closeModal('cartModal')">×</button>
+          <h2 style="color:var(--deep-blue);margin-bottom:1.5rem;">Cart</h2>
+          ${cart.length === 0 ? '<p>Empty</p>' : `
             ${cart.map(item => `
               <div style="display:flex;gap:1rem;background:#fafaf9;padding:1rem;border-radius:0.5rem;margin-bottom:1rem;">
                 <img src="${item.url}" style="width:80px;height:80px;object-fit:cover;border-radius:0.5rem;">
                 <div style="flex:1;">
-                  <h4 style="color:var(--deep-blue);">${item.title}</h4>
-                  <p style="color:#78716c;font-size:0.875rem;">${item.category}</p>
-                  <p style="font-weight:600;color:var(--gold);margin-top:0.5rem;">${item.price} x ${item.quantity}</p>
+                  <h4>${item.title}</h4>
+                  <p style="color:#78716c;">$${item.price} x ${item.quantity}</p>
                 </div>
-                <button onclick="removeFromCart(${item.id})" style="color:red;background:none;border:none;cursor:pointer;font-size:1.25rem;">×</button>
               </div>
             `).join('')}
-            
             <div style="border-top:1px solid #e7e5e4;padding-top:1rem;margin-top:1rem;">
               <div style="display:flex;justify-between;font-size:1.25rem;font-weight:600;margin-bottom:1rem;">
                 <span>Total:</span>
-                <span style="color:var(--gold);">${total}</span>
+                <span style="color:var(--gold);">$${total}</span>
               </div>
-              <button class="btn btn-primary" style="width:100%;" onclick="checkout()">Proceed to Checkout</button>
+              <button class="btn btn-primary" style="width:100%;" onclick="alert('Checkout coming soon')">Checkout</button>
             </div>
           `}
         </div>
       `;
       modal.classList.add('active');
-      modal.onclick = (e) => { if (e.target === modal) modal.classList.remove('active'); };
+      modal.onclick = (e) => { if(e.target === modal) closeModal('cartModal'); };
     }
     
-    function removeFromCart(id) {
-      cart = cart.filter(item => item.id !== id);
-      updateCartCount();
-      showCart();
+    function closeModal(id) {
+      document.getElementById(id).classList.remove('active');
     }
     
-    function checkout() {
-      alert('Payment integration coming soon! Your order:  + cart.reduce((sum, item) => sum + (item.price * item.quantity), 0));
-      cart = [];
-      updateCartCount();
-      document.getElementById('cartModal').classList.remove('active');
-    }
-    
-    function setupImageProtection() {
-      document.addEventListener('contextmenu', (e) => {
-        e.preventDefault();
-        return false;
-      });
-      
-      document.addEventListener('keydown', (e) => {
-        if ((e.ctrlKey || e.metaKey) && e.key === 's') {
-          e.preventDefault();
-          return false;
-        }
-        if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'I') {
-          e.preventDefault();
-          return false;
-        }
-        if (e.key === 'F12') {
-          e.preventDefault();
-          return false;
-        }
-      });
-      
-      document.addEventListener('dragstart', (e) => {
-        if (e.target.tagName === 'IMG') {
-          e.preventDefault();
-          return false;
-        }
-      });
-    }
-    
-    // Start the app
-    init();
-  </script>
-</body>
-</html>
+    document.
