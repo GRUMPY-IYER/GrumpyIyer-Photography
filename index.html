@@ -23,6 +23,7 @@
       color: var(--dark-text);
     }
     
+    /* Image Protection */
     img { 
       -webkit-user-drag: none;
       user-drag: none;
@@ -32,8 +33,10 @@
     
     button { pointer-events: auto !important; cursor: pointer; }
     
+    /* Layout */
     .app-container { display: flex; min-height: 100vh; }
     
+    /* Sidebar */
     .sidebar { 
       width: 280px; 
       background: var(--deep-blue); 
@@ -42,15 +45,20 @@
       height: 100vh; 
       overflow-y: auto;
       z-index: 100;
+      transition: transform 0.3s;
     }
     
     .sidebar-header {
-      padding: 1.5rem 1rem;
+      padding: 2rem 1.5rem;
       border-bottom: 1px solid rgba(255,255,255,0.1);
       text-align: center;
     }
     
-    .logo-img { width: 200px; height: auto; margin-bottom: 0.5rem; }
+    .logo-img {
+      width: 180px;
+      height: auto;
+      margin-bottom: 1rem;
+    }
     
     .sidebar-nav { padding: 1rem 0; }
     
@@ -75,12 +83,14 @@
     .nav-folder { font-weight: 600; margin-top: 0.5rem; }
     .nav-subfolder { padding-left: 3rem; font-size: 0.875rem; }
     
+    /* Main Content */
     .main-content {
       margin-left: 280px;
       flex: 1;
       min-height: 100vh;
     }
     
+    /* Header */
     .header {
       background: white;
       border-bottom: 2px solid var(--deep-blue);
@@ -121,7 +131,7 @@
       font-weight: 600;
     }
     
-    .btn-primary:hover { background: #d97706; }
+    .btn-primary:hover { background: #d97706; transform: translateY(-1px); }
     
     .btn-secondary {
       background: var(--purple);
@@ -129,6 +139,8 @@
     }
     
     .btn-secondary:hover { background: #6a1b9a; }
+    
+    .btn-small { padding: 0.4rem 0.8rem; font-size: 0.8rem; }
     
     .cart-btn {
       position: relative;
@@ -158,6 +170,7 @@
       font-weight: bold;
     }
     
+    /* Content Container */
     .content {
       padding: 2rem;
       max-width: 1400px;
@@ -178,6 +191,7 @@
       font-size: 1.125rem;
     }
     
+    /* Gallery */
     .gallery-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -229,6 +243,56 @@
       font-size: 1rem;
     }
     
+    /* Blog */
+    .blog-grid {
+      display: grid;
+      gap: 2rem;
+      margin-top: 2rem;
+    }
+    
+    .blog-card {
+      background: white;
+      border-radius: 0.5rem;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    
+    .blog-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(74,20,140,0.15);
+    }
+    
+    .blog-card img {
+      width: 100%;
+      height: 300px;
+      object-fit: cover;
+    }
+    
+    .blog-content {
+      padding: 2rem;
+    }
+    
+    .blog-date {
+      color: var(--purple);
+      font-size: 0.875rem;
+      margin-bottom: 0.5rem;
+    }
+    
+    .blog-title {
+      font-size: 1.75rem;
+      color: var(--deep-blue);
+      margin-bottom: 1rem;
+    }
+    
+    .blog-excerpt {
+      color: #57534e;
+      line-height: 1.6;
+      margin-bottom: 1rem;
+    }
+    
+    /* Modal */
     .modal {
       display: none;
       position: fixed;
@@ -238,6 +302,7 @@
       align-items: center;
       justify-content: center;
       padding: 2rem;
+      overflow-y: auto;
     }
     
     .modal.active { display: flex; }
@@ -246,9 +311,11 @@
       background: white;
       border-radius: 0.5rem;
       max-width: 1000px;
+      width: 100%;
       max-height: 90vh;
       overflow-y: auto;
       position: relative;
+      margin: auto;
     }
     
     .modal-content img {
@@ -312,7 +379,7 @@
     
     .close-btn:hover { background: #f5f5f5; }
     
-    /* Admin Styles */
+    /* Admin Panel */
     .admin-panel {
       background: white;
       border-radius: 0.5rem;
@@ -325,8 +392,8 @@
       justify-content: space-between;
       align-items: center;
       margin-bottom: 2rem;
-      padding-bottom: 1rem;
-      border-bottom: 2px solid var(--deep-blue);
+      flex-wrap: wrap;
+      gap: 1rem;
     }
     
     .version-info {
@@ -346,12 +413,12 @@
       background: #fafaf9;
       border-radius: 0.5rem;
       overflow: hidden;
-      border: 1px solid #e7e5e4;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
     }
     
     .admin-card img {
       width: 100%;
-      height: 150px;
+      height: 180px;
       object-fit: cover;
     }
     
@@ -364,42 +431,21 @@
       margin-bottom: 0.5rem;
     }
     
-    .admin-card-meta {
-      font-size: 0.875rem;
-      color: #78716c;
-      margin-bottom: 0.75rem;
-    }
-    
     .admin-actions {
       display: flex;
       gap: 0.5rem;
+      margin-top: 0.75rem;
     }
     
-    .btn-small {
-      padding: 0.5rem 1rem;
-      font-size: 0.875rem;
-    }
+    .btn-edit { background: #2563eb; color: white; }
+    .btn-delete { background: #dc2626; color: white; }
     
-    .btn-edit {
-      background: #2563eb;
-      color: white;
-      flex: 1;
-    }
-    
-    .btn-edit:hover { background: #1d4ed8; }
-    
-    .btn-delete {
-      background: #dc2626;
-      color: white;
-      flex: 1;
-    }
-    
-    .btn-delete:hover { background: #b91c1c; }
-    
-    /* Form Styles */
+    /* Form */
     .form-modal {
-      max-width: 600px;
       padding: 2rem;
+      max-width: 700px;
+      max-height: 90vh;
+      overflow-y: auto;
     }
     
     .form-group {
@@ -421,14 +467,14 @@
       border: 1px solid #e7e5e4;
       border-radius: 0.5rem;
       font-family: 'Lora', serif;
-      font-size: 1rem;
+      font-size: 0.95rem;
     }
     
     .form-group input:focus,
     .form-group select:focus,
     .form-group textarea:focus {
       outline: none;
-      border-color: var(--deep-blue);
+      border-color: var(--purple);
     }
     
     .form-group textarea {
@@ -442,15 +488,57 @@
       object-fit: cover;
       border-radius: 0.5rem;
       margin-top: 0.75rem;
-      display: none;
     }
     
-    .preview-img.show { display: block; }
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
     
+    /* Login Modal */
+    .login-modal {
+      padding: 2.5rem;
+      max-width: 400px;
+      text-align: center;
+    }
+    
+    .login-modal h2 {
+      font-size: 1.75rem;
+      color: var(--deep-blue);
+      margin-bottom: 1.5rem;
+    }
+    
+    .login-modal input {
+      width: 100%;
+      padding: 0.875rem;
+      border: 1px solid #e7e5e4;
+      border-radius: 0.5rem;
+      margin-bottom: 1rem;
+      font-family: 'Lora', serif;
+    }
+    
+    /* Mobile Responsiveness */
     @media (max-width: 768px) {
-      .sidebar { width: 0; transform: translateX(-100%); }
-      .main-content { margin-left: 0; }
-      .gallery-grid { grid-template-columns: 1fr; }
+      .sidebar {
+        transform: translateX(-100%);
+      }
+      
+      .sidebar.mobile-open {
+        transform: translateX(0);
+      }
+      
+      .main-content {
+        margin-left: 0;
+      }
+      
+      .gallery-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .grid-2 {
+        grid-template-columns: 1fr;
+      }
     }
   </style>
 </head>
@@ -459,6 +547,7 @@
     <!-- Sidebar -->
     <aside class="sidebar" id="sidebar">
       <div class="sidebar-header">
+        <!-- Your Logo SVG -->
         <svg class="logo-img" viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg">
           <rect width="500" height="500" fill="#0f4c75"/>
           <path d="M 40 40 L 40 140 L 50 140 L 50 50 L 140 50 L 140 40 Z" fill="#f5f5f5"/>
@@ -510,7 +599,8 @@
         <div class="nav-item nav-subfolder" data-page="landscapes-mountains">Mountains</div>
         <div class="nav-item nav-folder" data-page="blog">✍️ The Viewfinder</div>
         <div class="nav-item" data-page="about">📖 About</div>
-        <div class="nav-item" data-page="admin" id="adminNavItem" style="display:none;">⚙️ Admin Panel</div>
+        <div class="nav-item" data-page="contact">📧 Contact</div>
+        <div class="nav-item" data-page="admin" id="adminNavItem" style="display:none;">⚙️ Admin</div>
       </nav>
     </aside>
 
@@ -536,48 +626,20 @@
     </main>
   </div>
 
+  <!-- Photo Detail Modal -->
+  <div id="photoModal" class="modal"></div>
+  
   <!-- Photo Form Modal -->
-  <div class="modal" id="photoFormModal">
-    <div class="modal-content form-modal">
-      <button class="close-btn" onclick="closePhotoForm()">×</button>
-      <h2 id="formTitle" style="color:var(--deep-blue);margin-bottom:1.5rem;">Add Photo</h2>
-      <form id="photoForm" onsubmit="savePhoto(event)">
-        <div class="form-group">
-          <label>Photo Upload</label>
-          <input type="file" id="photoFile" accept="image/*" required>
-          <img id="previewImg" class="preview-img">
-        </div>
-        <div class="form-group">
-          <label>Title</label>
-          <input type="text" id="photoTitle" required>
-        </div>
-        <div class="form-group">
-          <label>Category</label>
-          <select id="photoCategory">
-            <option>Wildlife</option>
-            <option>Landscape</option>
-            <option>Square One</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label>Price ($)</label>
-          <input type="number" id="photoPrice" value="150">
-        </div>
-        <div class="form-group">
-          <label>Hook Line</label>
-          <input type="text" id="photoHook" placeholder="A captivating phrase...">
-        </div>
-        <div class="form-group">
-          <label>Philosophy / Description</label>
-          <textarea id="photoPhilosophy" placeholder="Your philosophical reflection..."></textarea>
-        </div>
-        <button type="submit" class="btn btn-primary" style="width:100%;" id="savePhotoBtn">Save Photo</button>
-      </form>
-    </div>
-  </div>
-
+  <div id="formModal" class="modal"></div>
+  
+  <!-- Login Modal -->
+  <div id="loginModal" class="modal"></div>
+  
+  <!-- Cart Modal -->
+  <div id="cartModal" class="modal"></div>
+  
   <script>
-    const VERSION = 'Oct 21, 2024 - 10:15 PM EST';
+    const VERSION = 'Oct 21, 2024 - 10:14 PM EST';
     const BUILD = '2024.10.21.001';
     const ADMIN_PASSWORD = 'grumpy2024';
     const CLOUDINARY_CLOUD_NAME = 'dzudd8xbx';
@@ -588,16 +650,16 @@
     let isAdmin = false;
     let cart = [];
     let photos = JSON.parse(localStorage.getItem('grumpyiyer_photos')) || [];
-    let editingPhotoId = null;
+    let blogPosts = JSON.parse(localStorage.getItem('grumpyiyer_blog')) || [];
+    let editingPhoto = null;
+    let editingBlogPost = null;
     
+    // Initialize
     function init() {
       setupNavigation();
       setupImageProtection();
+      setupEventListeners();
       renderCurrentPage();
-      
-      document.getElementById('photoFile').addEventListener('change', previewImage);
-      document.getElementById('loginBtn').addEventListener('click', showLoginPrompt);
-      document.getElementById('cartBtn').addEventListener('click', showCart);
     }
     
     function setupNavigation() {
@@ -611,55 +673,74 @@
       });
     }
     
+    function setupEventListeners() {
+      document.getElementById('loginBtn').onclick = showLoginModal;
+      document.getElementById('cartBtn').onclick = showCart;
+    }
+    
     function renderCurrentPage() {
       const content = document.getElementById('contentArea');
       
       switch(currentPage) {
         case 'home':
-          renderHome();
+          content.innerHTML = `
+            <h2 class="page-title">Welcome to My Viewfinder</h2>
+            <p class="page-subtitle">Where Wildlife Meets Witness Consciousness</p>
+            <div class="gallery-grid" id="galleryGrid"></div>
+          `;
+          renderGallery(photos);
           break;
-        case 'admin':
-          if (isAdmin) renderAdmin();
-          else renderHome();
+        case 'square-one':
+          content.innerHTML = `
+            <h2 class="page-title">Square One</h2>
+            <p class="page-subtitle">My Signature Collection</p>
+            <div class="gallery-grid" id="galleryGrid"></div>
+          `;
+          renderGallery(photos.filter(p => p.category === 'Square One'));
+          break;
+        case 'wildlife':
+          content.innerHTML = `
+            <h2 class="page-title">Wildlife Photography</h2>
+            <p class="page-subtitle">Nature's Untamed Beauty</p>
+            <div class="gallery-grid" id="galleryGrid"></div>
+          `;
+          renderGallery(photos.filter(p => p.category === 'Wildlife'));
+          break;
+        case 'landscapes':
+          content.innerHTML = `
+            <h2 class="page-title">Landscapes</h2>
+            <p class="page-subtitle">Earth's Serene Expressions</p>
+            <div class="gallery-grid" id="galleryGrid"></div>
+          `;
+          renderGallery(photos.filter(p => p.category === 'Landscape'));
           break;
         case 'blog':
+          content.innerHTML = `
+            <h2 class="page-title">The Viewfinder</h2>
+            <p class="page-subtitle">Essays on Photography, Nature & Non-Duality</p>
+            ${isAdmin ? '<button class="btn btn-primary" onclick="showBlogForm()">+ New Post</button>' : ''}
+            <div class="blog-grid" id="blogGrid"></div>
+          `;
           renderBlog();
           break;
         case 'about':
           renderAbout();
           break;
+        case 'contact':
+          renderContact();
+          break;
+        case 'admin':
+          if (isAdmin) renderAdmin();
+          else {
+            content.innerHTML = '<p>Please login to access admin panel.</p>';
+          }
+          break;
         default:
-          renderGalleryPage(currentPage);
+          content.innerHTML = `
+            <h2 class="page-title">${currentPage.replace('-', ' ').toUpperCase()}</h2>
+            <p class="page-subtitle">Coming Soon</p>
+          `;
       }
-    }
-    
-    function renderHome() {
-      document.getElementById('contentArea').innerHTML = `
-        <h2 class="page-title">Welcome to My Viewfinder</h2>
-        <p class="page-subtitle">Where Wildlife Meets Witness Consciousness</p>
-        <div class="gallery-grid" id="galleryGrid"></div>
-      `;
-      renderGallery(photos);
-    }
-    
-    function renderGalleryPage(page) {
-      const titles = {
-        'square-one': 'Square One',
-        'wildlife': 'Wildlife',
-        'landscapes': 'Landscapes',
-        'wildlife-africa': 'Africa Safari',
-        'wildlife-birds': 'Birds',
-        'wildlife-mammals': 'Big Cats',
-        'landscapes-sunsets': 'Sunsets',
-        'landscapes-mountains': 'Mountains'
-      };
-      
-      document.getElementById('contentArea').innerHTML = `
-        <h2 class="page-title">${titles[page] || page}</h2>
-        <p class="page-subtitle">Gallery Collection</p>
-        <div class="gallery-grid" id="galleryGrid"></div>
-      `;
-      renderGallery(photos.filter(p => p.category === page || p.category === titles[page]));
     }
     
     function renderGallery(photoList) {
@@ -675,7 +756,50 @@
           </div>
         </div>
       `).join('');
-      document.getElementById('galleryGrid').innerHTML = html || '<p style="color:#78716c;">No photos in this category yet.</p>';
+      document.getElementById('galleryGrid').innerHTML = html || '<p style="color:#78716c;">No photos yet. ' + (isAdmin ? 'Add some in the admin panel!' : 'Check back soon!') + '</p>';
+    }
+    
+    function renderBlog() {
+      const html = blogPosts.map(post => `
+        <div class="blog-card" onclick="openBlogPost(${post.id})">
+          ${post.image ? `<img src="${post.image}" alt="${post.title}">` : ''}
+          <div class="blog-content">
+            <div class="blog-date">${post.date}</div>
+            <h3 class="blog-title">${post.title}</h3>
+            <p class="blog-excerpt">${post.excerpt}</p>
+          </div>
+        </div>
+      `).join('');
+      document.getElementById('blogGrid').innerHTML = html || '<p style="color:#78716c;">No blog posts yet. ' + (isAdmin ? 'Create your first post!' : 'Check back soon!') + '</p>';
+    }
+    
+    function renderAbout() {
+      document.getElementById('contentArea').innerHTML = `
+        <h2 class="page-title">About</h2>
+        <p class="page-subtitle">The Photographer Behind the Lens</p>
+        <div style="max-width:800px;background:white;padding:2rem;border-radius:0.5rem;box-shadow:0 2px 8px rgba(0,0,0,0.1);">
+          <p style="line-height:1.8;color:#57534e;margin-bottom:1.5rem;">
+            Through the lens, I seek the silence between forms - the space where the observer and observed dissolve into one awareness.
+          </p>
+          <p style="line-height:1.8;color:#57534e;margin-bottom:1.5rem;">
+            My photography is an exploration of Advaita Vedanta philosophy through the natural world. Each image is an invitation to witness consciousness, to recognize the oneness that underlies all apparent diversity.
+          </p>
+          <p style="line-height:1.8;color:#57534e;">
+            The wildlife I photograph exists in perfect harmony with its environment - not through effort, but through simply being what it is. This is the teaching: to rest in our true nature, undivided and complete.
+          </p>
+        </div>
+      `;
+    }
+    
+    function renderContact() {
+      document.getElementById('contentArea').innerHTML = `
+        <h2 class="page-title">Contact</h2>
+        <p class="page-subtitle">Get in Touch</p>
+        <div style="max-width:600px;background:white;padding:2rem;border-radius:0.5rem;box-shadow:0 2px 8px rgba(0,0,0,0.1);">
+          <p style="margin-bottom:1rem;color:#57534e;">Email: grumpyiyer@example.com</p>
+          <p style="color:#57534e;">Social: @grumpyiyer</p>
+        </div>
+      `;
     }
     
     function renderAdmin() {
@@ -683,25 +807,33 @@
         <div class="admin-panel">
           <div class="admin-header">
             <div>
-              <h2 class="page-title" style="margin:0;">Admin Panel</h2>
-              <p class="version-info">Build: ${BUILD}</p>
-              <p class="version-info">Deployed: ${VERSION}</p>
+              <h2 style="color:var(--deep-blue);font-size:2rem;">Admin Panel</h2>
+              <div class="version-info">
+                Deployed: ${VERSION}<br>
+                Build: ${BUILD}
+              </div>
             </div>
-            <button class="btn btn-primary" onclick="openPhotoForm()">+ Add Photo</button>
+            <div style="display:flex;gap:1rem;flex-wrap:wrap;">
+              <button class="btn btn-primary" onclick="showPhotoForm()">+ Add Photo</button>
+              <button class="btn btn-secondary" onclick="showSettingsPanel()">⚙️ Settings</button>
+              <button class="btn btn-secondary" onclick="logout()">Logout</button>
+            </div>
           </div>
-          <div class="admin-grid" id="adminGrid"></div>
+          
+          <h3 style="color:var(--deep-blue);margin-bottom:1rem;font-size:1.5rem;">Manage Photos</h3>
+          <div class="admin-grid" id="adminPhotoGrid"></div>
         </div>
       `;
-      renderAdminGrid();
+      renderAdminPhotos();
     }
     
-    function renderAdminGrid() {
+    function renderAdminPhotos() {
       const html = photos.map(p => `
         <div class="admin-card">
           <img src="${p.url}" alt="${p.title}">
           <div class="admin-card-content">
             <h4>${p.title}</h4>
-            <p class="admin-card-meta">${p.category} · $${p.price}</p>
+            <p style="color:#78716c;font-size:0.875rem;margin-bottom:0.5rem;">${p.category || 'Uncategorized'} · ${p.price}</p>
             <div class="admin-actions">
               <button class="btn btn-small btn-edit" onclick="editPhoto(${p.id})">Edit</button>
               <button class="btn btn-small btn-delete" onclick="deletePhoto(${p.id})">Delete</button>
@@ -709,3 +841,381 @@
           </div>
         </div>
       `).join('');
+      document.getElementById('adminPhotoGrid').innerHTML = html || '<p>No photos yet.</p>';
+    }
+    
+    function showLoginModal() {
+      const modal = document.getElementById('loginModal');
+      modal.innerHTML = `
+        <div class="modal-content login-modal" onclick="event.stopPropagation()">
+          <button class="close-btn" onclick="closeLoginModal()">×</button>
+          <h2>Admin Login</h2>
+          <input type="password" id="passwordInput" placeholder="Enter password" onkeypress="if(event.key==='Enter') handleLogin()">
+          <button class="btn btn-primary" style="width:100%;" onclick="handleLogin()">Login</button>
+        </div>
+      `;
+      modal.classList.add('active');
+      modal.onclick = (e) => { if (e.target === modal) closeLoginModal(); };
+      setTimeout(() => document.getElementById('passwordInput').focus(), 100);
+    }
+    
+    function closeLoginModal() {
+      document.getElementById('loginModal').classList.remove('active');
+    }
+    
+    function handleLogin() {
+      const password = document.getElementById('passwordInput').value;
+      if (password === ADMIN_PASSWORD) {
+        isAdmin = true;
+        document.getElementById('adminNavItem').style.display = 'block';
+        document.getElementById('loginBtn').innerHTML = '🔓 Logout';
+        document.getElementById('loginBtn').onclick = logout;
+        closeLoginModal();
+        currentPage = 'admin';
+        document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+        document.getElementById('adminNavItem').classList.add('active');
+        renderCurrentPage();
+      } else {
+        alert('Incorrect password');
+      }
+    }
+    
+    function logout() {
+      isAdmin = false;
+      document.getElementById('adminNavItem').style.display = 'none';
+      document.getElementById('loginBtn').innerHTML = '🔒 Admin';
+      document.getElementById('loginBtn').onclick = showLoginModal;
+      currentPage = 'home';
+      document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+      document.querySelector('.nav-item[data-page="home"]').classList.add('active');
+      renderCurrentPage();
+    }
+    
+    function showPhotoForm(photoId = null) {
+      editingPhoto = photoId ? photos.find(p => p.id === photoId) : null;
+      const modal = document.getElementById('formModal');
+      modal.innerHTML = `
+        <div class="modal-content form-modal" onclick="event.stopPropagation()">
+          <button class="close-btn" onclick="closePhotoForm()">×</button>
+          <h2 style="color:var(--deep-blue);margin-bottom:1.5rem;">${editingPhoto ? 'Edit Photo' : 'Add New Photo'}</h2>
+          <form id="photoForm" onsubmit="savePhoto(event)">
+            <div class="form-group">
+              <label>Photo Upload</label>
+              <input type="file" id="photoFile" accept="image/*" ${editingPhoto ? '' : 'required'}>
+              ${editingPhoto ? `<img src="${editingPhoto.url}" class="preview-img" id="previewImg">` : '<img id="previewImg" class="preview-img" style="display:none;">'}
+            </div>
+            <div class="form-group">
+              <label>Title *</label>
+              <input type="text" id="photoTitle" value="${editingPhoto?.title || ''}" required>
+            </div>
+            <div class="grid-2">
+              <div class="form-group">
+                <label>Category</label>
+                <select id="photoCategory">
+                  <option ${editingPhoto?.category === 'Wildlife' ? 'selected' : ''}>Wildlife</option>
+                  <option ${editingPhoto?.category === 'Landscape' ? 'selected' : ''}>Landscape</option>
+                  <option ${editingPhoto?.category === 'Square One' ? 'selected' : ''}>Square One</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Price ($)</label>
+                <input type="number" id="photoPrice" value="${editingPhoto?.price || 150}">
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Hook Line</label>
+              <input type="text" id="photoHook" value="${editingPhoto?.hookLine || ''}" placeholder="A captivating phrase...">
+            </div>
+            <div class="form-group">
+              <label>Philosophy / Description</label>
+              <textarea id="photoPhilosophy" rows="5">${editingPhoto?.philosophy || ''}</textarea>
+            </div>
+            <button type="submit" class="btn btn-primary" style="width:100%;">Save Photo</button>
+          </form>
+        </div>
+      `;
+      modal.classList.add('active');
+      modal.onclick = (e) => { if (e.target === modal) closePhotoForm(); };
+      
+      document.getElementById('photoFile').onchange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = (e) => {
+            document.getElementById('previewImg').src = e.target.result;
+            document.getElementById('previewImg').style.display = 'block';
+          };
+          reader.readAsDataURL(file);
+        }
+      };
+    }
+    
+    function closePhotoForm() {
+      document.getElementById('formModal').classList.remove('active');
+      editingPhoto = null;
+    }
+    
+    function savePhoto(e) {
+      e.preventDefault();
+      
+      const fileInput = document.getElementById('photoFile');
+      const previewImg = document.getElementById('previewImg');
+      
+      if (editingPhoto && fileInput.files.length === 0) {
+        savePhotoMetadata(previewImg.src);
+        return;
+      }
+      
+      if (!fileInput.files || fileInput.files.length === 0) {
+        alert('Please select a photo!');
+        return;
+      }
+      
+      const file = fileInput.files[0];
+      const submitBtn = document.querySelector('#photoForm button[type="submit"]');
+      submitBtn.textContent = 'Uploading to Cloudinary...';
+      submitBtn.disabled = true;
+      
+      uploadToCloudinary(file)
+        .then(cloudinaryUrl => {
+          savePhotoMetadata(cloudinaryUrl);
+          submitBtn.textContent = 'Save Photo';
+          submitBtn.disabled = false;
+        })
+        .catch(error => {
+          console.error('Upload error:', error);
+          alert('Failed to upload. Please try again.');
+          submitBtn.textContent = 'Save Photo';
+          submitBtn.disabled = false;
+        });
+    }
+    
+    function uploadToCloudinary(file) {
+      return new Promise((resolve, reject) => {
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+        formData.append('folder', 'photography');
+        
+        fetch(CLOUDINARY_UPLOAD_URL, {
+          method: 'POST',
+          body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.secure_url) {
+            resolve(data.secure_url);
+          } else {
+            reject(new Error('No URL in response'));
+          }
+        })
+        .catch(error => reject(error));
+      });
+    }
+    
+    function savePhotoMetadata(photoUrl) {
+      const newId = editingPhoto ? editingPhoto.id : Date.now();
+      
+      const photo = {
+        id: newId,
+        title: document.getElementById('photoTitle').value,
+        category: document.getElementById('photoCategory').value,
+        price: parseInt(document.getElementById('photoPrice').value),
+        hookLine: document.getElementById('photoHook').value || '',
+        philosophy: document.getElementById('photoPhilosophy').value || '',
+        url: photoUrl,
+        likes: editingPhoto ? editingPhoto.likes : 0
+      };
+      
+      if (editingPhoto) {
+        const index = photos.findIndex(p => p.id === editingPhoto.id);
+        if (index !== -1) {
+          photos[index] = photo;
+        }
+      } else {
+        photos.push(photo);
+      }
+      
+      localStorage.setItem('grumpyiyer_photos', JSON.stringify(photos));
+      closePhotoForm();
+      renderAdmin();
+    }
+    
+    function editPhoto(id) {
+      showPhotoForm(id);
+    }
+    
+    function deletePhoto(id) {
+      if (confirm('Delete this photo?')) {
+        photos = photos.filter(p => p.id !== id);
+        localStorage.setItem('grumpyiyer_photos', JSON.stringify(photos));
+        renderAdmin();
+      }
+    }
+    
+    function showSettingsPanel() {
+      const modal = document.getElementById('formModal');
+      modal.innerHTML = `
+        <div class="modal-content form-modal" onclick="event.stopPropagation()">
+          <button class="close-btn" onclick="document.getElementById('formModal').classList.remove('active')">×</button>
+          <h2 style="color:var(--deep-blue);margin-bottom:1.5rem;">Website Settings</h2>
+          
+          <div class="form-group">
+            <label>Logo Upload (Coming Soon)</label>
+            <input type="file" accept="image/*" disabled>
+            <p style="font-size:0.875rem;color:#78716c;margin-top:0.5rem;">Custom logo upload will be available in next update</p>
+          </div>
+          
+          <div class="form-group">
+            <label>Primary Font (Coming Soon)</label>
+            <select disabled>
+              <option>Lora (Current)</option>
+              <option>Merriweather</option>
+              <option>Playfair Display</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label>Manage Folders/Categories (Coming Soon)</label>
+            <p style="font-size:0.875rem;color:#78716c;">Folder management will be available in next update</p>
+          </div>
+          
+          <p style="color:var(--purple);font-style:italic;margin-top:1rem;">These features are being built and will be available soon!</p>
+        </div>
+      `;
+      modal.classList.add('active');
+      modal.onclick = (e) => { if (e.target === modal) modal.classList.remove('active'); };
+    }
+    
+    function openPhotoModal(id) {
+      const photo = photos.find(p => p.id === id);
+      if (!photo) return;
+      
+      const modal = document.getElementById('photoModal');
+      modal.innerHTML = `
+        <div class="modal-content" onclick="event.stopPropagation()">
+          <button class="close-btn" onclick="document.getElementById('photoModal').classList.remove('active')">×</button>
+          <img src="${photo.url}" alt="${photo.title}">
+          <div class="modal-info">
+            ${photo.hookLine ? `<p class="modal-hook">${photo.hookLine}</p>` : ''}
+            <h2 class="modal-title">${photo.title}</h2>
+            ${photo.philosophy ? `<p class="modal-philosophy">${photo.philosophy}</p>` : ''}
+            <div class="modal-footer">
+              <span class="modal-price">${photo.price}</span>
+              <button class="btn btn-primary" onclick="addToCart(${photo.id})">Add to Cart</button>
+            </div>
+          </div>
+        </div>
+      `;
+      modal.classList.add('active');
+      modal.onclick = (e) => { if (e.target === modal) modal.classList.remove('active'); };
+    }
+    
+    function addToCart(photoId) {
+      const photo = photos.find(p => p.id === photoId);
+      if (!photo) return;
+      
+      const existing = cart.find(item => item.id === photoId);
+      if (existing) {
+        existing.quantity++;
+      } else {
+        cart.push({ ...photo, quantity: 1 });
+      }
+      updateCartCount();
+      document.getElementById('photoModal').classList.remove('active');
+    }
+    
+    function updateCartCount() {
+      const count = cart.reduce((sum, item) => sum + item.quantity, 0);
+      const countEl = document.getElementById('cartCount');
+      if (count > 0) {
+        countEl.textContent = count;
+        countEl.style.display = 'flex';
+      } else {
+        countEl.style.display = 'none';
+      }
+    }
+    
+    function showCart() {
+      const modal = document.getElementById('cartModal');
+      const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+      
+      modal.innerHTML = `
+        <div class="modal-content form-modal" onclick="event.stopPropagation()">
+          <button class="close-btn" onclick="document.getElementById('cartModal').classList.remove('active')">×</button>
+          <h2 style="color:var(--deep-blue);margin-bottom:1.5rem;">Shopping Cart</h2>
+          
+          ${cart.length === 0 ? '<p style="text-align:center;color:#78716c;padding:2rem;">Your cart is empty</p>' : `
+            ${cart.map(item => `
+              <div style="display:flex;gap:1rem;background:#fafaf9;padding:1rem;border-radius:0.5rem;margin-bottom:1rem;">
+                <img src="${item.url}" style="width:80px;height:80px;object-fit:cover;border-radius:0.5rem;">
+                <div style="flex:1;">
+                  <h4 style="color:var(--deep-blue);">${item.title}</h4>
+                  <p style="color:#78716c;font-size:0.875rem;">${item.category}</p>
+                  <p style="font-weight:600;color:var(--gold);margin-top:0.5rem;">${item.price} x ${item.quantity}</p>
+                </div>
+                <button onclick="removeFromCart(${item.id})" style="color:red;background:none;border:none;cursor:pointer;font-size:1.25rem;">×</button>
+              </div>
+            `).join('')}
+            
+            <div style="border-top:1px solid #e7e5e4;padding-top:1rem;margin-top:1rem;">
+              <div style="display:flex;justify-between;font-size:1.25rem;font-weight:600;margin-bottom:1rem;">
+                <span>Total:</span>
+                <span style="color:var(--gold);">${total}</span>
+              </div>
+              <button class="btn btn-primary" style="width:100%;" onclick="checkout()">Proceed to Checkout</button>
+            </div>
+          `}
+        </div>
+      `;
+      modal.classList.add('active');
+      modal.onclick = (e) => { if (e.target === modal) modal.classList.remove('active'); };
+    }
+    
+    function removeFromCart(id) {
+      cart = cart.filter(item => item.id !== id);
+      updateCartCount();
+      showCart();
+    }
+    
+    function checkout() {
+      alert('Payment integration coming soon! Your order:  + cart.reduce((sum, item) => sum + (item.price * item.quantity), 0));
+      cart = [];
+      updateCartCount();
+      document.getElementById('cartModal').classList.remove('active');
+    }
+    
+    function setupImageProtection() {
+      document.addEventListener('contextmenu', (e) => {
+        e.preventDefault();
+        return false;
+      });
+      
+      document.addEventListener('keydown', (e) => {
+        if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+          e.preventDefault();
+          return false;
+        }
+        if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'I') {
+          e.preventDefault();
+          return false;
+        }
+        if (e.key === 'F12') {
+          e.preventDefault();
+          return false;
+        }
+      });
+      
+      document.addEventListener('dragstart', (e) => {
+        if (e.target.tagName === 'IMG') {
+          e.preventDefault();
+          return false;
+        }
+      });
+    }
+    
+    // Start the app
+    init();
+  </script>
+</body>
+</html>
