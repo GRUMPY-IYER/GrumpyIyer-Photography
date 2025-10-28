@@ -656,26 +656,50 @@
     
     // Initialize
     function init() {
+      console.log('Initializing app...');
       setupNavigation();
       setupImageProtection();
       setupEventListeners();
       renderCurrentPage();
+      console.log('App initialized successfully');
     }
     
     function setupNavigation() {
-      document.querySelectorAll('.nav-item').forEach(item => {
-        item.addEventListener('click', () => {
+      console.log('Setting up navigation...');
+      const navItems = document.querySelectorAll('.nav-item');
+      console.log('Found nav items:', navItems.length);
+      
+      navItems.forEach(item => {
+        item.addEventListener('click', function() {
+          console.log('Clicked:', this.dataset.page);
           document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
-          item.classList.add('active');
-          currentPage = item.dataset.page;
+          this.classList.add('active');
+          currentPage = this.dataset.page;
           renderCurrentPage();
         });
       });
     }
     
     function setupEventListeners() {
-      document.getElementById('loginBtn').onclick = showLoginModal;
-      document.getElementById('cartBtn').onclick = showCart;
+      console.log('Setting up event listeners...');
+      const loginBtn = document.getElementById('loginBtn');
+      const cartBtn = document.getElementById('cartBtn');
+      
+      if (loginBtn) {
+        loginBtn.addEventListener('click', function() {
+          console.log('Login button clicked');
+          showLoginModal();
+        });
+        console.log('Login button listener attached');
+      }
+      
+      if (cartBtn) {
+        cartBtn.addEventListener('click', function() {
+          console.log('Cart button clicked');
+          showCart();
+        });
+        console.log('Cart button listener attached');
+      }
     }
     
     function renderCurrentPage() {
