@@ -7,523 +7,315 @@
   <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&family=Amatic+SC:wght@700&display=swap" rel="stylesheet">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    :root {
-      --deep-blue: #0f4c75;
-      --purple: #4A148C;
-      --gold: #F57F17;
-      --cream: #f5f5f4;
-    }
+    :root { --deep-blue: #0f4c75; --purple: #4A148C; --gold: #F57F17; --cream: #f5f5f4; }
     body { font-family: 'Lora', serif; background: var(--cream); color: #1c1917; }
-    img { -webkit-user-drag: none; user-drag: none; user-select: none; }
-    button { pointer-events: auto !important; cursor: pointer; }
-    
+    img { -webkit-user-drag: none; user-select: none; }
+    button { cursor: pointer; }
     .app-container { display: flex; min-height: 100vh; }
     .sidebar { width: 280px; background: var(--deep-blue); color: white; position: fixed; height: 100vh; overflow-y: auto; z-index: 100; }
-    .sidebar-header { padding: 2rem 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.1); text-align: center; }
-    .logo-img { width: 180px; height: auto; margin-bottom: 1rem; }
-    .sidebar-nav { padding: 1rem 0; }
-    .nav-item { padding: 0.875rem 1.5rem; cursor: pointer; transition: background 0.2s; border-left: 3px solid transparent; display: flex; align-items: center; gap: 0.75rem; font-size: 0.95rem; }
+    .sidebar-header { padding: 2rem 1.5rem; text-align: center; }
+    .logo-img { width: 180px; }
+    .nav-item { padding: 0.875rem 1.5rem; cursor: pointer; border-left: 3px solid transparent; }
     .nav-item:hover { background: rgba(255,255,255,0.1); }
     .nav-item.active { background: rgba(255,255,255,0.15); border-left-color: var(--gold); font-weight: 600; }
-    .nav-folder { font-weight: 600; margin-top: 0.5rem; }
-    .nav-subfolder { padding-left: 3rem; font-size: 0.875rem; }
-    
-    .main-content { margin-left: 280px; flex: 1; min-height: 100vh; }
+    .main-content { margin-left: 280px; flex: 1; }
     .header { background: white; border-bottom: 2px solid var(--deep-blue); padding: 1.5rem 2rem; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 50; }
-    .header-title h1 { font-family: 'Amatic SC', cursive; font-size: 2rem; color: var(--deep-blue); }
-    .header-actions { display: flex; gap: 1rem; align-items: center; }
-    
-    .btn { padding: 0.625rem 1.25rem; border: none; border-radius: 0.5rem; cursor: pointer; font-family: 'Lora', serif; font-size: 0.875rem; transition: all 0.2s; }
-    .btn-primary { background: var(--gold); color: white; font-weight: 600; }
-    .btn-primary:hover { background: #d97706; }
+    .header h1 { font-family: 'Amatic SC'; font-size: 2rem; color: var(--deep-blue); }
+    .btn { padding: 0.625rem 1.25rem; border: none; border-radius: 0.5rem; font-size: 0.875rem; }
+    .btn-primary { background: var(--gold); color: white; }
     .btn-secondary { background: var(--purple); color: white; }
-    .btn-secondary:hover { background: #6a1b9a; }
-    .btn-small { padding: 0.4rem 0.8rem; font-size: 0.8rem; }
-    
-    .cart-btn { position: relative; background: var(--deep-blue); color: white; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: none; }
-    .cart-count { position: absolute; top: -5px; right: -5px; background: var(--gold); color: white; width: 20px; height: 20px; border-radius: 50%; font-size: 0.75rem; display: flex; align-items: center; justify-content: center; font-weight: bold; }
-    
     .content { padding: 2rem; max-width: 1400px; margin: 0 auto; }
-    .page-title { font-size: 2.5rem; color: var(--deep-blue); margin-bottom: 0.5rem; font-weight: 600; }
-    .page-subtitle { color: var(--purple); font-style: italic; margin-bottom: 2rem; font-size: 1.125rem; }
-    
-    .gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 2rem; margin-top: 2rem; }
-    .photo-card { background: white; border-radius: 0.5rem; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1); transition: all 0.3s; cursor: pointer; }
-    .photo-card:hover { transform: translateY(-4px); box-shadow: 0 8px 20px rgba(15,76,117,0.2); }
+    .page-title { font-size: 2.5rem; color: var(--deep-blue); margin-bottom: 2rem; }
+    .gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 2rem; }
+    .photo-card { background: white; border-radius: 0.5rem; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1); cursor: pointer; }
     .photo-card img { width: 100%; height: 250px; object-fit: cover; }
     .photo-info { padding: 1.25rem; }
-    .photo-info h3 { font-size: 1.125rem; color: var(--deep-blue); margin-bottom: 0.5rem; }
-    .photo-meta { display: flex; justify-content: space-between; align-items: center; color: #78716c; font-size: 0.875rem; }
-    .photo-price { color: var(--gold); font-weight: 600; font-size: 1rem; }
-    
-    .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 200; align-items: center; justify-content: center; padding: 2rem; overflow-y: auto; }
-    .modal.active { display: flex; }
-    .modal-content { background: white; border-radius: 0.5rem; max-width: 1000px; width: 100%; max-height: 90vh; overflow-y: auto; position: relative; margin: auto; }
-    .modal-content img { width: 100%; max-height: 60vh; object-fit: contain; }
-    .modal-info { padding: 2rem; }
-    .close-btn { position: absolute; top: 1rem; right: 1rem; background: white; border: none; width: 44px; height: 44px; border-radius: 50%; font-size: 1.5rem; cursor: pointer; z-index: 10; box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
-    .close-btn:hover { background: #f5f5f5; }
-    
-    .admin-panel { background: white; border-radius: 0.5rem; padding: 2rem; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
-    .admin-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem; }
-    .admin-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 1.5rem; margin-top: 2rem; }
-    .admin-card { background: #fafaf9; border-radius: 0.5rem; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
-    .admin-card img { width: 100%; height: 180px; object-fit: cover; }
-    .admin-card-content { padding: 1rem; }
-    .admin-actions { display: flex; gap: 0.5rem; margin-top: 0.75rem; }
-    
-    .form-modal { padding: 2rem; max-width: 700px; }
-    .form-group { margin-bottom: 1.25rem; }
-    .form-group label { display: block; margin-bottom: 0.5rem; font-weight: 600; color: var(--deep-blue); }
-    .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 0.75rem; border: 1px solid #e7e5e4; border-radius: 0.5rem; font-family: 'Lora', serif; }
-    .form-group textarea { resize: vertical; min-height: 100px; }
-    .preview-img { width: 100%; height: 200px; object-fit: cover; border-radius: 0.5rem; margin-top: 0.75rem; }
-    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
-    
-    @media (max-width: 768px) {
-      .sidebar { transform: translateX(-100%); }
-      .main-content { margin-left: 0; }
-      .gallery-grid { grid-template-columns: 1fr; }
-    }
+    .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 200; }
+    .modal.active { display: flex; align-items: center; justify-content: center; padding: 2rem; }
+    .modal-content { background: white; border-radius: 0.5rem; max-width: 1000px; width: 100%; max-height: 90vh; overflow-y: auto; position: relative; }
+    .close-btn { position: absolute; top: 1rem; right: 1rem; background: white; border: none; width: 44px; height: 44px; border-radius: 50%; font-size: 1.5rem; z-index: 10; }
+    .form-group { margin-bottom: 1rem; }
+    .form-group label { display: block; margin-bottom: 0.5rem; font-weight: 600; }
+    .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 0.75rem; border: 1px solid #e7e5e4; border-radius: 0.5rem; }
   </style>
 </head>
 <body>
   <div class="app-container">
     <aside class="sidebar">
       <div class="sidebar-header">
-        <svg class="logo-img" viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg">
-          <rect width="500" height="500" fill="#0f4c75"/>
-          <path d="M 40 40 L 40 140 L 50 140 L 50 50 L 140 50 L 140 40 Z" fill="#f5f5f5"/>
-          <path d="M 360 40 L 460 40 L 460 140 L 450 140 L 450 50 L 360 50 Z" fill="#f5f5f5"/>
-          <path d="M 40 360 L 40 460 L 140 460 L 140 450 L 50 450 L 50 360 Z" fill="#f5f5f5"/>
-          <path d="M 360 450 L 360 460 L 460 460 L 460 360 L 450 360 L 450 450 Z" fill="#f5f5f5"/>
-          <circle cx="250" cy="230" r="140" fill="#f5f5f5"/>
-          <g transform="translate(180, 150)">
-            <path d="M 60 50 L 75 35 L 72 50 L 78 35 L 75 50 L 90 65 L 90 88 L 75 95 L 45 95 L 30 88 L 30 65 Z" fill="none" stroke="#0f4c75" stroke-width="2.5"/>
-            <circle cx="72" cy="65" r="2" fill="#0f4c75"/>
-          </g>
-          <g transform="translate(280, 160)">
-            <circle cx="12" cy="46" r="10" fill="none" stroke="#7a9eb5" stroke-width="2"/>
-          </g>
-          <text x="250" y="420" font-family="'Amatic SC'" font-size="46" fill="#f5f5f5" text-anchor="middle">Grumpy Iyer</text>
-          <text x="250" y="455" font-family="'Amatic SC'" font-size="32" fill="#7a9eb5" text-anchor="middle">Viewfinder</text>
-        </svg>
+        <img src="https://via.placeholder.com/180x180/0f4c75/ffffff?text=GI+Logo" class="logo-img" alt="Logo">
       </div>
-      <nav class="sidebar-nav">
-        <div class="nav-item active" onclick="navigateTo('home')">🏠 Home</div>
-        <div class="nav-item" onclick="navigateTo('wildlife')">🦁 Wildlife</div>
-        <div class="nav-item" onclick="navigateTo('landscapes')">🏔️ Landscapes</div>
-        <div class="nav-item" onclick="navigateTo('blog')">✍️ The Viewfinder</div>
-        <div class="nav-item" onclick="navigateTo('about')">📖 About</div>
-        <div class="nav-item" onclick="navigateTo('contact')">📧 Contact</div>
-        <div class="nav-item" id="adminNav" style="display:none;" onclick="navigateTo('admin')">⚙️ Admin</div>
+      <nav>
+        <div class="nav-item active" onclick="nav('home')">🏠 Home</div>
+        <div class="nav-item" onclick="nav('wildlife')">🦁 Wildlife</div>
+        <div class="nav-item" onclick="nav('landscapes')">🏔️ Landscapes</div>
+        <div class="nav-item" onclick="nav('blog')">✍️ The Viewfinder</div>
+        <div class="nav-item" onclick="nav('about')">📖 About</div>
+        <div id="adminNav" class="nav-item" style="display:none;" onclick="nav('admin')">⚙️ Admin</div>
       </nav>
     </aside>
 
     <main class="main-content">
       <header class="header">
-        <div class="header-title">
+        <div>
           <h1>Grumpy Iyer Viewfinder</h1>
-          <p style="font-size:0.875rem;color:var(--purple);font-style:italic;">Photography & Philosophy</p>
         </div>
-        <div class="header-actions">
-          <button class="btn btn-secondary" id="loginBtn" onclick="showLoginModal()">🔒 Admin</button>
-          <button class="cart-btn" onclick="showCart()">
-            🛒
-            <span class="cart-count" id="cartCount" style="display:none;"></span>
-          </button>
+        <div>
+          <button class="btn btn-secondary" onclick="showLogin()">🔒 Admin</button>
+          <button class="btn btn-secondary" onclick="showCart()">🛒 <span id="cartCount"></span></button>
         </div>
       </header>
-      <div class="content" id="contentArea"></div>
+      <div class="content" id="content"></div>
     </main>
   </div>
 
-  <div id="photoModal" class="modal"></div>
-  <div id="formModal" class="modal"></div>
-  <div id="loginModal" class="modal"></div>
-  <div id="cartModal" class="modal"></div>
+  <div id="modal1" class="modal"></div>
+  <div id="modal2" class="modal"></div>
 
   <script>
-    const VERSION = 'Oct 21, 2024 - 10:14 PM EST';
-    const BUILD = '2024.10.21.002';
-    const ADMIN_PASSWORD = 'grumpy2024';
-    const CLOUDINARY_CLOUD_NAME = 'dzudd8xbx';
-    const CLOUDINARY_UPLOAD_PRESET = 'grumpyiyer_unsigned';
-    const CLOUDINARY_UPLOAD_URL = `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`;
+    var VERSION = 'Oct 21, 2024 - 10:14 PM EST';
+    var BUILD = '2024.10.21.003';
+    var ADMIN_PASSWORD = 'grumpy2024';
+    var CLOUDINARY_CLOUD_NAME = 'dzudd8xbx';
+    var CLOUDINARY_UPLOAD_PRESET = 'grumpyiyer_unsigned';
     
-    let currentPage = 'home';
-    let isAdmin = false;
-    let cart = [];
-    let photos = JSON.parse(localStorage.getItem('grumpyiyer_photos')) || [];
-    let editingPhoto = null;
+    var currentPage = 'home';
+    var isAdmin = false;
+    var cart = [];
+    var photos = JSON.parse(localStorage.getItem('grumpyiyer_photos') || '[]');
+    var editingPhoto = null;
     
-    function navigateTo(page) {
-      console.log('Navigating to:', page);
-      document.addEventListener('contextmenu', (e) => { e.preventDefault(); return false; });
-    document.addEventListener('keydown', (e) => {
-      if ((e.ctrlKey || e.metaKey) && e.key === 's') { e.preventDefault(); return false; }
-      if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'I') { e.preventDefault(); return false; }
-      if (e.key === 'F12') { e.preventDefault(); return false; }
-    });
-    document.addEventListener('dragstart', (e) => { if (e.target.tagName === 'IMG') { e.preventDefault(); return false; } });
-    
-    renderCurrentPage();
-  </script>
-</body>
-</html>querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+    function nav(page) {
+      console.log('Navigate to:', page);
+      var items = document.querySelectorAll('.nav-item');
+      for(var i = 0; i < items.length; i++) {
+        items[i].classList.remove('active');
+      }
       event.target.classList.add('active');
       currentPage = page;
-      renderCurrentPage();
+      render();
     }
     
-    function renderCurrentPage() {
-      const content = document.getElementById('contentArea');
-      switch(currentPage) {
-        case 'home':
-          content.innerHTML = `
-            <h2 class="page-title">Welcome to My Viewfinder</h2>
-            <p class="page-subtitle">Where Wildlife Meets Witness Consciousness</p>
-            <div class="gallery-grid" id="gallery"></div>
-          `;
-          renderGallery(photos);
-          break;
-        case 'wildlife':
-          content.innerHTML = `
-            <h2 class="page-title">Wildlife Photography</h2>
-            <p class="page-subtitle">Nature's Untamed Beauty</p>
-            <div class="gallery-grid" id="gallery"></div>
-          `;
-          renderGallery(photos.filter(p => p.category === 'Wildlife'));
-          break;
-        case 'landscapes':
-          content.innerHTML = `
-            <h2 class="page-title">Landscapes</h2>
-            <p class="page-subtitle">Earth's Serene Expressions</p>
-            <div class="gallery-grid" id="gallery"></div>
-          `;
-          renderGallery(photos.filter(p => p.category === 'Landscape'));
-          break;
-        case 'blog':
-          content.innerHTML = `
-            <h2 class="page-title">The Viewfinder</h2>
-            <p class="page-subtitle">Essays on Photography & Philosophy</p>
-            <p style="color:#78716c;">Blog posts coming soon!</p>
-          `;
-          break;
-        case 'about':
-          content.innerHTML = `
-            <h2 class="page-title">About</h2>
-            <div style="max-width:800px;background:white;padding:2rem;border-radius:0.5rem;">
-              <p style="line-height:1.8;color:#57534e;margin-bottom:1.5rem;">Through the lens, I seek the silence between forms.</p>
-            </div>
-          `;
-          break;
-        case 'contact':
-          content.innerHTML = `
-            <h2 class="page-title">Contact</h2>
-            <div style="max-width:600px;background:white;padding:2rem;border-radius:0.5rem;">
-              <p>Email: grumpyiyer@example.com</p>
-            </div>
-          `;
-          break;
-        case 'admin':
-          if (!isAdmin) {
-            content.innerHTML = '<p>Please login</p>';
-            return;
-          }
-          content.innerHTML = `
-            <div class="admin-panel">
-              <div class="admin-header">
-                <div>
-                  <h2 style="color:var(--deep-blue);">Admin Panel</h2>
-                  <p style="font-size:0.875rem;color:#78716c;">Build: ${BUILD}</p>
-                </div>
-                <button class="btn btn-primary" onclick="showPhotoForm()">+ Add Photo</button>
-              </div>
-              <div class="admin-grid" id="adminGrid"></div>
-            </div>
-          `;
-          renderAdminPhotos();
-          break;
+    function render() {
+      var content = document.getElementById('content');
+      if(currentPage === 'home') {
+        content.innerHTML = '<h2 class="page-title">Welcome</h2><div class="gallery-grid" id="gallery"></div>';
+        renderGallery(photos);
+      } else if(currentPage === 'wildlife') {
+        content.innerHTML = '<h2 class="page-title">Wildlife</h2><div class="gallery-grid" id="gallery"></div>';
+        var filtered = photos.filter(function(p) { return p.category === 'Wildlife'; });
+        renderGallery(filtered);
+      } else if(currentPage === 'landscapes') {
+        content.innerHTML = '<h2 class="page-title">Landscapes</h2><div class="gallery-grid" id="gallery"></div>';
+        var filtered = photos.filter(function(p) { return p.category === 'Landscape'; });
+        renderGallery(filtered);
+      } else if(currentPage === 'blog') {
+        content.innerHTML = '<h2 class="page-title">The Viewfinder</h2><p>Blog coming soon</p>';
+      } else if(currentPage === 'about') {
+        content.innerHTML = '<h2 class="page-title">About</h2><p>About content</p>';
+      } else if(currentPage === 'admin') {
+        if(!isAdmin) {
+          content.innerHTML = '<p>Please login</p>';
+          return;
+        }
+        content.innerHTML = '<h2 class="page-title">Admin</h2><p>Build: ' + BUILD + '</p><button class="btn btn-primary" onclick="showPhotoForm()">+ Add Photo</button><div id="adminGrid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-top:2rem;"></div>';
+        renderAdmin();
       }
     }
     
-    function renderGallery(photoList) {
-      const html = photoList.map(p => `
-        <div class="photo-card" onclick="openPhoto(${p.id})">
-          <img src="${p.url}" alt="${p.title}">
-          <div class="photo-info">
-            <h3>${p.title}</h3>
-            <div class="photo-meta">
-              <span>${p.category || 'Photo'}</span>
-              <span class="photo-price">$${p.price}</span>
-            </div>
-          </div>
-        </div>
-      `).join('');
+    function renderGallery(list) {
+      var html = '';
+      for(var i = 0; i < list.length; i++) {
+        var p = list[i];
+        html += '<div class="photo-card" onclick="openPhoto(' + p.id + ')">';
+        html += '<img src="' + p.url + '" alt="' + p.title + '">';
+        html += '<div class="photo-info">';
+        html += '<h3>' + p.title + '</h3>';
+        html += '<p>$' + p.price + '</p>';
+        html += '</div></div>';
+      }
       document.getElementById('gallery').innerHTML = html || '<p>No photos yet</p>';
     }
     
-    function renderAdminPhotos() {
-      const html = photos.map(p => `
-        <div class="admin-card">
-          <img src="${p.url}">
-          <div class="admin-card-content">
-            <h4>${p.title}</h4>
-            <p style="font-size:0.875rem;color:#78716c;">${p.category} · $${p.price}</p>
-            <div class="admin-actions">
-              <button class="btn btn-small btn-secondary" onclick="editPhoto(${p.id})">Edit</button>
-              <button class="btn btn-small" style="background:#dc2626;color:white;" onclick="deletePhoto(${p.id})">Delete</button>
-            </div>
-          </div>
-        </div>
-      `).join('');
+    function renderAdmin() {
+      var html = '';
+      for(var i = 0; i < photos.length; i++) {
+        var p = photos[i];
+        html += '<div style="background:white;padding:1rem;border-radius:0.5rem;">';
+        html += '<img src="' + p.url + '" style="width:100%;height:150px;object-fit:cover;border-radius:0.5rem;">';
+        html += '<h4>' + p.title + '</h4>';
+        html += '<button class="btn btn-secondary" onclick="editPhoto(' + p.id + ')">Edit</button> ';
+        html += '<button class="btn btn-primary" onclick="deletePhoto(' + p.id + ')">Delete</button>';
+        html += '</div>';
+      }
       document.getElementById('adminGrid').innerHTML = html || '<p>No photos</p>';
     }
     
-    function showLoginModal() {
-      const modal = document.getElementById('loginModal');
-      modal.innerHTML = `
-        <div class="modal-content form-modal" onclick="event.stopPropagation()">
-          <button class="close-btn" onclick="closeModal('loginModal')">×</button>
-          <h2 style="color:var(--deep-blue);margin-bottom:1.5rem;">Admin Login</h2>
-          <input type="password" id="passwordInput" placeholder="Password" style="width:100%;padding:0.75rem;border:1px solid #e7e5e4;border-radius:0.5rem;margin-bottom:1rem;">
-          <button class="btn btn-primary" style="width:100%;" onclick="handleLogin()">Login</button>
-        </div>
-      `;
+    function showLogin() {
+      var modal = document.getElementById('modal1');
+      modal.innerHTML = '<div class="modal-content" style="padding:2rem;max-width:400px;" onclick="event.stopPropagation()"><button class="close-btn" onclick="closeModal1()">×</button><h2>Admin Login</h2><input type="password" id="pwd" placeholder="Password" style="width:100%;padding:0.75rem;margin:1rem 0;"><button class="btn btn-primary" style="width:100%;" onclick="login()">Login</button></div>';
       modal.classList.add('active');
-      modal.onclick = (e) => { if(e.target === modal) closeModal('loginModal'); };
+      modal.onclick = function(e) { if(e.target === modal) closeModal1(); };
     }
     
-    function handleLogin() {
-      const pwd = document.getElementById('passwordInput').value;
-      if (pwd === ADMIN_PASSWORD) {
+    function login() {
+      var pwd = document.getElementById('pwd').value;
+      if(pwd === ADMIN_PASSWORD) {
         isAdmin = true;
         document.getElementById('adminNav').style.display = 'block';
-        document.getElementById('loginBtn').innerHTML = '🔓 Logout';
-        document.getElementById('loginBtn').onclick = logout;
-        closeModal('loginModal');
-        navigateTo('admin');
+        closeModal1();
+        nav('admin');
       } else {
         alert('Wrong password');
       }
     }
     
-    function logout() {
-      isAdmin = false;
-      document.getElementById('adminNav').style.display = 'none';
-      document.getElementById('loginBtn').innerHTML = '🔒 Admin';
-      document.getElementById('loginBtn').onclick = showLoginModal;
-      navigateTo('home');
+    function closeModal1() {
+      document.getElementById('modal1').classList.remove('active');
     }
     
-    function showPhotoForm(id = null) {
-      editingPhoto = id ? photos.find(p => p.id === id) : null;
-      const modal = document.getElementById('formModal');
-      modal.innerHTML = `
-        <div class="modal-content form-modal" onclick="event.stopPropagation()">
-          <button class="close-btn" onclick="closeModal('formModal')">×</button>
-          <h2 style="color:var(--deep-blue);margin-bottom:1.5rem;">${editingPhoto ? 'Edit' : 'Add'} Photo</h2>
-          <div class="form-group">
-            <label>Photo</label>
-            <input type="file" id="photoFile" accept="image/*">
-            ${editingPhoto ? `<img src="${editingPhoto.url}" class="preview-img" id="preview">` : '<img id="preview" class="preview-img" style="display:none;">'}
-          </div>
-          <div class="form-group">
-            <label>Title</label>
-            <input type="text" id="photoTitle" value="${editingPhoto?.title || ''}">
-          </div>
-          <div class="grid-2">
-            <div class="form-group">
-              <label>Category</label>
-              <select id="photoCategory">
-                <option ${editingPhoto?.category === 'Wildlife' ? 'selected' : ''}>Wildlife</option>
-                <option ${editingPhoto?.category === 'Landscape' ? 'selected' : ''}>Landscape</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label>Price</label>
-              <input type="number" id="photoPrice" value="${editingPhoto?.price || 150}">
-            </div>
-          </div>
-          <div class="form-group">
-            <label>Hook Line</label>
-            <input type="text" id="photoHook" value="${editingPhoto?.hookLine || ''}">
-          </div>
-          <div class="form-group">
-            <label>Philosophy</label>
-            <textarea id="photoPhilosophy">${editingPhoto?.philosophy || ''}</textarea>
-          </div>
-          <button class="btn btn-primary" style="width:100%;" onclick="savePhoto()">Save</button>
-        </div>
-      `;
+    function closeModal2() {
+      document.getElementById('modal2').classList.remove('active');
+    }
+    
+    function showPhotoForm() {
+      var modal = document.getElementById('modal2');
+      var html = '<div class="modal-content" style="padding:2rem;max-width:600px;" onclick="event.stopPropagation()">';
+      html += '<button class="close-btn" onclick="closeModal2()">×</button>';
+      html += '<h2>Add Photo</h2>';
+      html += '<div class="form-group"><label>Photo</label><input type="file" id="file" accept="image/*"></div>';
+      html += '<div class="form-group"><label>Title</label><input type="text" id="title"></div>';
+      html += '<div class="form-group"><label>Category</label><select id="category"><option>Wildlife</option><option>Landscape</option></select></div>';
+      html += '<div class="form-group"><label>Price</label><input type="number" id="price" value="150"></div>';
+      html += '<button class="btn btn-primary" style="width:100%;" onclick="savePhoto()">Save</button>';
+      html += '</div>';
+      modal.innerHTML = html;
       modal.classList.add('active');
-      modal.onclick = (e) => { if(e.target === modal) closeModal('formModal'); };
-      
-      document.getElementById('photoFile').onchange = (e) => {
-        const file = e.target.files[0];
-        if (file) {
-          const reader = new FileReader();
-          reader.onload = (e) => {
-            document.getElementById('preview').src = e.target.result;
-            document.getElementById('preview').style.display = 'block';
-          };
-          reader.readAsDataURL(file);
-        }
-      };
+      modal.onclick = function(e) { if(e.target === modal) closeModal2(); };
     }
     
     function savePhoto() {
-      const file = document.getElementById('photoFile').files[0];
-      const btn = event.target;
-      
-      if (!file && !editingPhoto) {
+      var file = document.getElementById('file').files[0];
+      if(!file) {
         alert('Select a photo');
         return;
       }
       
-      if (!file && editingPhoto) {
-        savePhotoData(editingPhoto.url);
-        return;
-      }
-      
+      var btn = event.target;
       btn.textContent = 'Uploading...';
       btn.disabled = true;
       
-      const formData = new FormData();
+      var formData = new FormData();
       formData.append('file', file);
       formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
       formData.append('folder', 'photography');
       
-      fetch(CLOUDINARY_UPLOAD_URL, { method: 'POST', body: formData })
-        .then(r => r.json())
-        .then(data => {
-          savePhotoData(data.secure_url);
-          btn.textContent = 'Save';
-          btn.disabled = false;
-        })
-        .catch(err => {
-          alert('Upload failed');
-          btn.textContent = 'Save';
-          btn.disabled = false;
-        });
-    }
-    
-    function savePhotoData(url) {
-      const photo = {
-        id: editingPhoto ? editingPhoto.id : Date.now(),
-        title: document.getElementById('photoTitle').value,
-        category: document.getElementById('photoCategory').value,
-        price: parseInt(document.getElementById('photoPrice').value),
-        hookLine: document.getElementById('photoHook').value,
-        philosophy: document.getElementById('photoPhilosophy').value,
-        url: url
-      };
-      
-      if (editingPhoto) {
-        const idx = photos.findIndex(p => p.id === editingPhoto.id);
-        photos[idx] = photo;
-      } else {
+      fetch('https://api.cloudinary.com/v1_1/' + CLOUDINARY_CLOUD_NAME + '/image/upload', {
+        method: 'POST',
+        body: formData
+      })
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        var photo = {
+          id: Date.now(),
+          title: document.getElementById('title').value,
+          category: document.getElementById('category').value,
+          price: parseInt(document.getElementById('price').value),
+          url: data.secure_url
+        };
         photos.push(photo);
-      }
-      
-      localStorage.setItem('grumpyiyer_photos', JSON.stringify(photos));
-      closeModal('formModal');
-      renderCurrentPage();
-    }
-    
-    function editPhoto(id) {
-      showPhotoForm(id);
+        localStorage.setItem('grumpyiyer_photos', JSON.stringify(photos));
+        closeModal2();
+        render();
+      })
+      .catch(function() {
+        alert('Upload failed');
+        btn.textContent = 'Save';
+        btn.disabled = false;
+      });
     }
     
     function deletePhoto(id) {
-      if (confirm('Delete?')) {
-        photos = photos.filter(p => p.id !== id);
+      if(confirm('Delete?')) {
+        photos = photos.filter(function(p) { return p.id !== id; });
         localStorage.setItem('grumpyiyer_photos', JSON.stringify(photos));
-        renderCurrentPage();
+        render();
       }
     }
     
     function openPhoto(id) {
-      const p = photos.find(x => x.id === id);
-      if (!p) return;
-      const modal = document.getElementById('photoModal');
-      modal.innerHTML = `
-        <div class="modal-content" onclick="event.stopPropagation()">
-          <button class="close-btn" onclick="closeModal('photoModal')">×</button>
-          <img src="${p.url}">
-          <div class="modal-info">
-            ${p.hookLine ? `<p style="color:var(--gold);font-style:italic;font-size:1.25rem;">${p.hookLine}</p>` : ''}
-            <h2 style="color:var(--deep-blue);font-size:2rem;margin:1rem 0;">${p.title}</h2>
-            ${p.philosophy ? `<p style="color:#57534e;line-height:1.8;margin-bottom:1.5rem;">${p.philosophy}</p>` : ''}
-            <div style="border-top:1px solid #e7e5e4;padding-top:1.5rem;display:flex;justify-content:space-between;">
-              <span style="font-size:1.75rem;color:var(--gold);">$${p.price}</span>
-              <button class="btn btn-primary" onclick="addToCart(${p.id})">Add to Cart</button>
-            </div>
-          </div>
-        </div>
-      `;
+      var p = photos.find(function(x) { return x.id === id; });
+      if(!p) return;
+      var modal = document.getElementById('modal1');
+      var html = '<div class="modal-content" onclick="event.stopPropagation()">';
+      html += '<button class="close-btn" onclick="closeModal1()">×</button>';
+      html += '<img src="' + p.url + '" style="width:100%;max-height:60vh;object-fit:contain;">';
+      html += '<div style="padding:2rem;">';
+      html += '<h2>' + p.title + '</h2>';
+      html += '<p style="font-size:1.5rem;color:var(--gold);margin:1rem 0;">$' + p.price + '</p>';
+      html += '<button class="btn btn-primary" onclick="addToCart(' + p.id + ')">Add to Cart</button>';
+      html += '</div></div>';
+      modal.innerHTML = html;
       modal.classList.add('active');
-      modal.onclick = (e) => { if(e.target === modal) closeModal('photoModal'); };
+      modal.onclick = function(e) { if(e.target === modal) closeModal1(); };
     }
     
     function addToCart(id) {
-      const p = photos.find(x => x.id === id);
-      if (!p) return;
-      const existing = cart.find(item => item.id === id);
-      if (existing) {
+      var p = photos.find(function(x) { return x.id === id; });
+      if(!p) return;
+      var existing = cart.find(function(item) { return item.id === id; });
+      if(existing) {
         existing.quantity++;
       } else {
-        cart.push({ ...p, quantity: 1 });
+        cart.push({ id: p.id, title: p.title, price: p.price, url: p.url, quantity: 1 });
       }
-      updateCartCount();
-      closeModal('photoModal');
+      updateCart();
+      closeModal1();
     }
     
-    function updateCartCount() {
-      const count = cart.reduce((sum, item) => sum + item.quantity, 0);
-      const el = document.getElementById('cartCount');
-      if (count > 0) {
-        el.textContent = count;
-        el.style.display = 'flex';
-      } else {
-        el.style.display = 'none';
+    function updateCart() {
+      var count = 0;
+      for(var i = 0; i < cart.length; i++) {
+        count += cart[i].quantity;
       }
+      document.getElementById('cartCount').textContent = count > 0 ? count : '';
     }
     
     function showCart() {
-      const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-      const modal = document.getElementById('cartModal');
-      modal.innerHTML = `
-        <div class="modal-content form-modal" onclick="event.stopPropagation()">
-          <button class="close-btn" onclick="closeModal('cartModal')">×</button>
-          <h2 style="color:var(--deep-blue);margin-bottom:1.5rem;">Cart</h2>
-          ${cart.length === 0 ? '<p>Empty</p>' : `
-            ${cart.map(item => `
-              <div style="display:flex;gap:1rem;background:#fafaf9;padding:1rem;border-radius:0.5rem;margin-bottom:1rem;">
-                <img src="${item.url}" style="width:80px;height:80px;object-fit:cover;border-radius:0.5rem;">
-                <div style="flex:1;">
-                  <h4>${item.title}</h4>
-                  <p style="color:#78716c;">$${item.price} x ${item.quantity}</p>
-                </div>
-              </div>
-            `).join('')}
-            <div style="border-top:1px solid #e7e5e4;padding-top:1rem;margin-top:1rem;">
-              <div style="display:flex;justify-between;font-size:1.25rem;font-weight:600;margin-bottom:1rem;">
-                <span>Total:</span>
-                <span style="color:var(--gold);">$${total}</span>
-              </div>
-              <button class="btn btn-primary" style="width:100%;" onclick="alert('Checkout coming soon')">Checkout</button>
-            </div>
-          `}
-        </div>
-      `;
+      var modal = document.getElementById('modal1');
+      var html = '<div class="modal-content" style="padding:2rem;max-width:600px;" onclick="event.stopPropagation()">';
+      html += '<button class="close-btn" onclick="closeModal1()">×</button>';
+      html += '<h2>Cart</h2>';
+      if(cart.length === 0) {
+        html += '<p>Empty</p>';
+      } else {
+        var total = 0;
+        for(var i = 0; i < cart.length; i++) {
+          var item = cart[i];
+          total += item.price * item.quantity;
+          html += '<div style="display:flex;gap:1rem;margin:1rem 0;padding:1rem;background:#f5f5f4;border-radius:0.5rem;">';
+          html += '<img src="' + item.url + '" style="width:80px;height:80px;object-fit:cover;border-radius:0.5rem;">';
+          html += '<div><h4>' + item.title + '</h4><p>$' + item.price + ' x ' + item.quantity + '</p></div>';
+          html += '</div>';
+        }
+        html += '<div style="border-top:1px solid #e7e5e4;padding-top:1rem;margin-top:1rem;">';
+        html += '<p style="font-size:1.25rem;font-weight:600;">Total: $' + total + '</p>';
+        html += '<button class="btn btn-primary" style="width:100%;margin-top:1rem;" onclick="alert(\'Checkout coming soon\')">Checkout</button>';
+        html += '</div>';
+      }
+      html += '</div>';
+      modal.innerHTML = html;
       modal.classList.add('active');
-      modal.onclick = (e) => { if(e.target === modal) closeModal('cartModal'); };
+      modal.onclick = function(e) { if(e.target === modal) closeModal1(); };
     }
     
-    function closeModal(id) {
-      document.getElementById(id).classList.remove('active');
-    }
+    document.addEventListener('contextmenu', function(e) { e.preventDefault(); });
+    document.addEventListener('keydown', function(e) {
+      if((e.ctrlKey || e.metaKey) && e.key === 's') e.preventDefault();
+      if(e.key === 'F12') e.preventDefault();
+    });
     
-    document.
+    render();
+  </script>
+</body>
+</html>
