@@ -1,4 +1,18 @@
-<!DOCTYPE html>
+function renderBlog() {
+      var html = '';
+      for(var i = 0; i < blogPosts.length; i++) {
+        var post = blogPosts[i];
+        html += '<div style="background:white;padding:2rem;border-radius:0.5rem;box-shadow:0 2px 8px rgba(0,0,0,0.1);cursor:pointer;" onclick="openBlogPost(' + post.id + ')">';
+        if(post.image) {
+          html += '<img src="' + post.image + '" style="width:100%;height:250px;object-fit:cover;border-radius:0.5rem;margin-bottom:1rem;">';
+        }
+        html += '<p style="color:var(--purple);font-size:0.875rem;margin-bottom:0.5rem;">' + post.date + '</p>';
+        html += '<h3 style="font-size:1.5rem;color:var(--deep-blue);margin-bottom:1rem;">' + post.title + '</h3>';
+        html += '<p style="color:#666;">' + (post.excerpt || post.content.substring(0, 150) + '...') + '</p>';
+        html += '</div>';
+      }
+      document.getElementById('blogGrid').innerHTML = html || '<p style="color:#666;">No blog posts yet. ' + (isAdmin ? 'Click "New Post" to create one!' : '') + '</p>';
+    }<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -43,15 +57,10 @@
   <div class="app-container">
     <aside class="sidebar">
       <div class="sidebar-header">
-        <img src="https://via.placeholder.com/180x180/0f4c75/ffffff?text=GI+Logo" class="logo-img" alt="Logo">
+        <img src="" id="siteLogoImg" class="logo-img" alt="Logo">
       </div>
-      <nav>
+      <nav id="sidebarNav">
         <div class="nav-item active" onclick="nav('home')">🏠 Home</div>
-        <div class="nav-item" onclick="nav('wildlife')">🦁 Wildlife</div>
-        <div class="nav-item" onclick="nav('landscapes')">🏔️ Landscapes</div>
-        <div class="nav-item" onclick="nav('blog')">✍️ The Viewfinder</div>
-        <div class="nav-item" onclick="nav('about')">📖 About</div>
-        <div id="adminNav" class="nav-item" style="display:none;" onclick="nav('admin')">⚙️ Admin</div>
       </nav>
     </aside>
 
@@ -73,8 +82,8 @@
   <div id="modal2" class="modal"></div>
 
   <script>
-    var VERSION = 'Oct 21, 2024 - 10:14 PM EST';
-    var BUILD = '2024.10.21.003';
+    var VERSION = 'Oct 21, 2024 - 10:30 PM EST';
+    var BUILD = '2024.10.21.004';
     var ADMIN_PASSWORD = 'grumpy2024';
     var CLOUDINARY_CLOUD_NAME = 'dzudd8xbx';
     var CLOUDINARY_UPLOAD_PRESET = 'grumpyiyer_unsigned';
@@ -83,7 +92,11 @@
     var isAdmin = false;
     var cart = [];
     var photos = JSON.parse(localStorage.getItem('grumpyiyer_photos') || '[]');
+    var blogPosts = JSON.parse(localStorage.getItem('grumpyiyer_blog') || '[]');
+    var categories = JSON.parse(localStorage.getItem('grumpyiyer_categories') || '["Wildlife", "Landscape", "Square One"]');
+    var settings = JSON.parse(localStorage.getItem('grumpyiyer_settings') || '{"logoUrl": "https://via.placeholder.com/180x180/0f4c75/ffffff?text=GI+Logo"}');
     var editingPhoto = null;
+    var editingBlogPost = null;
     
     function nav(page) {
       console.log('Navigate to:', page);
@@ -96,30 +109,47 @@
       render();
     }
     
+    function buildSidebar() {
+      var html = '<div class="nav-item active" onclick="nav(\'home\')">🏠 Home</div>';
+      for(var i = 0; i < categories.length; i++) {
+        var cat = categories[i];
+        html += '<div class="nav-item" onclick="nav(\'' + cat.toLowerCase().replace(/ /g, '-') + '\')">📸 ' + cat + '</div>';
+      }
+      html += '<div class="nav-item" onclick="nav(\'blog\')">✍️ The Viewfinder</div>';
+      html += '<div class="nav-item" onclick="nav(\'about\')">📖 About</div>';
+      if(isAdmin) {
+        html += '<div id="adminNav" class="nav-item" onclick="nav(\'admin\')">⚙️ Admin</div>';
+      }
+      document.getElementById('sidebarNav').innerHTML = html;
+      document.getElementById('siteLogoImg').src = settings.logoUrl;
+    }
+    
     function render() {
       var content = document.getElementById('content');
+      
       if(currentPage === 'home') {
-        content.innerHTML = '<h2 class="page-title">Welcome</h2><div class="gallery-grid" id="gallery"></div>';
+        content.innerHTML = '<h2 class="page-title">Welcome to My Viewfinder</h2><div class="gallery-grid" id="gallery"></div>';
         renderGallery(photos);
-      } else if(currentPage === 'wildlife') {
-        content.innerHTML = '<h2 class="page-title">Wildlife</h2><div class="gallery-grid" id="gallery"></div>';
-        var filtered = photos.filter(function(p) { return p.category === 'Wildlife'; });
-        renderGallery(filtered);
-      } else if(currentPage === 'landscapes') {
-        content.innerHTML = '<h2 class="page-title">Landscapes</h2><div class="gallery-grid" id="gallery"></div>';
-        var filtered = photos.filter(function(p) { return p.category === 'Landscape'; });
-        renderGallery(filtered);
       } else if(currentPage === 'blog') {
-        content.innerHTML = '<h2 class="page-title">The Viewfinder</h2><p>Blog coming soon</p>';
+        content.innerHTML = '<h2 class="page-title">The Viewfinder</h2><p style="font-style:italic;color:#666;margin-bottom:2rem;">Essays on Photography, Nature & Non-Duality</p>' + (isAdmin ? '<button class="btn btn-primary" onclick="showBlogForm()">+ New Post</button>' : '') + '<div id="blogGrid" style="display:grid;gap:2rem;margin-top:2rem;"></div>';
+        renderBlog();
       } else if(currentPage === 'about') {
-        content.innerHTML = '<h2 class="page-title">About</h2><p>About content</p>';
+        content.innerHTML = '<h2 class="page-title">About</h2><p style="line-height:1.8;max-width:800px;">Through the lens, I seek the silence between forms - the space where the observer and observed dissolve into one awareness.</p>';
       } else if(currentPage === 'admin') {
         if(!isAdmin) {
           content.innerHTML = '<p>Please login</p>';
           return;
         }
-        content.innerHTML = '<h2 class="page-title">Admin</h2><p>Build: ' + BUILD + '</p><button class="btn btn-primary" onclick="showPhotoForm()">+ Add Photo</button><div id="adminGrid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-top:2rem;"></div>';
+        content.innerHTML = '<h2 class="page-title">Admin Panel</h2><p style="color:#666;margin-bottom:1rem;">Build: ' + BUILD + '</p><div style="display:flex;gap:1rem;flex-wrap:wrap;margin-bottom:2rem;"><button class="btn btn-primary" onclick="showPhotoForm(null)">+ Add Photo</button><button class="btn btn-secondary" onclick="showSettings()">⚙️ Settings</button><button class="btn btn-secondary" onclick="showCategoryManager()">📁 Manage Categories</button></div><h3 style="margin:2rem 0 1rem;">Photos</h3><div id="adminGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:1rem;"></div>';
         renderAdmin();
+      } else {
+        // Category pages
+        var catName = currentPage.replace(/-/g, ' ');
+        var catPhotos = photos.filter(function(p) { 
+          return p.category && p.category.toLowerCase() === catName;
+        });
+        content.innerHTML = '<h2 class="page-title">' + catName.charAt(0).toUpperCase() + catName.slice(1) + '</h2><div class="gallery-grid" id="gallery"></div>';
+        renderGallery(catPhotos);
       }
     }
     
@@ -127,12 +157,1442 @@
       var html = '';
       for(var i = 0; i < list.length; i++) {
         var p = list[i];
+        var likeCount = p.likes || 0;
+        var commentCount = (p.comments || []).length;
         html += '<div class="photo-card" onclick="openPhoto(' + p.id + ')">';
         html += '<img src="' + p.url + '" alt="' + p.title + '">';
         html += '<div class="photo-info">';
         html += '<h3>' + p.title + '</h3>';
-        html += '<p>$' + p.price + '</p>';
+        html += '<div style="display:flex;justify-content:space-between;align-items:center;margin-top:0.5rem;">';
+        html += '<div style="display:flex;gap:1rem;font-size:0.875rem;color:#666;">';
+        html += '<span>❤️ ' + likeCount + '</span>';
+        html += '<span>💬 ' + commentCount + '</span>';
+        html += '</div>';
+        html += '<span style="color:var(--gold);font-weight:600;">
+    
+    function renderAdmin() {
+      var html = '';
+      for(var i = 0; i < photos.length; i++) {
+        var p = photos[i];
+        html += '<div style="background:white;padding:1rem;border-radius:0.5rem;box-shadow:0 1px 3px rgba(0,0,0,0.1);">';
+        html += '<img src="' + p.url + '" style="width:100%;height:150px;object-fit:cover;border-radius:0.5rem;margin-bottom:0.5rem;">';
+        html += '<h4 style="font-size:1rem;margin-bottom:0.25rem;">' + p.title + '</h4>';
+        html += '<p style="font-size:0.875rem;color:#666;margin-bottom:0.75rem;">' + p.category + ' · 
+    
+    function showLogin() {
+      var modal = document.getElementById('modal1');
+      modal.innerHTML = '<div class="modal-content" style="padding:2rem;max-width:400px;" onclick="event.stopPropagation()"><button class="close-btn" onclick="closeModal1()">×</button><h2>Admin Login</h2><input type="password" id="pwd" placeholder="Password" style="width:100%;padding:0.75rem;margin:1rem 0;"><button class="btn btn-primary" style="width:100%;" onclick="login()">Login</button></div>';
+      modal.classList.add('active');
+      modal.onclick = function(e) { if(e.target === modal) closeModal1(); };
+    }
+    
+    function login() {
+      var pwd = document.getElementById('pwd').value;
+      if(pwd === ADMIN_PASSWORD) {
+        isAdmin = true;
+        buildSidebar();
+        closeModal1();
+        currentPage = 'admin';
+        render();
+      } else {
+        alert('Wrong password');
+      }
+    }
+    
+    function closeModal1() {
+      document.getElementById('modal1').classList.remove('active');
+    }
+    
+    function closeModal2() {
+      document.getElementById('modal2').classList.remove('active');
+    }
+    
+    function showPhotoForm(id) {
+      editingPhoto = id ? photos.find(function(p) { return p.id === id; }) : null;
+      var modal = document.getElementById('modal2');
+      var html = '<div class="modal-content" style="padding:2rem;max-width:600px;" onclick="event.stopPropagation()">';
+      html += '<button class="close-btn" onclick="closeModal2()">×</button>';
+      html += '<h2>' + (editingPhoto ? 'Edit' : 'Add') + ' Photo</h2>';
+      html += '<div class="form-group"><label>Photo</label><input type="file" id="file" accept="image/*"></div>';
+      if(editingPhoto) {
+        html += '<img src="' + editingPhoto.url + '" style="width:100%;height:200px;object-fit:cover;border-radius:0.5rem;margin-bottom:1rem;">';
+      }
+      html += '<div class="form-group"><label>Title</label><input type="text" id="title" value="' + (editingPhoto ? editingPhoto.title : '') + '"></div>';
+      html += '<div class="form-group"><label>Category</label><select id="category">';
+      for(var i = 0; i < categories.length; i++) {
+        var selected = editingPhoto && editingPhoto.category === categories[i] ? ' selected' : '';
+        html += '<option' + selected + '>' + categories[i] + '</option>';
+      }
+      html += '</select></div>';
+      html += '<div class="form-group"><label>Price</label><input type="number" id="price" value="' + (editingPhoto ? editingPhoto.price : 150) + '"></div>';
+      html += '<div class="form-group"><label>Hook Line</label><input type="text" id="hookLine" value="' + (editingPhoto ? (editingPhoto.hookLine || '') : '') + '" placeholder="A captivating phrase..."></div>';
+      html += '<div class="form-group"><label>Philosophy</label><textarea id="philosophy" rows="4">' + (editingPhoto ? (editingPhoto.philosophy || '') : '') + '</textarea></div>';
+      html += '<button class="btn btn-primary" style="width:100%;" onclick="savePhoto()">Save</button>';
+      html += '</div>';
+      modal.innerHTML = html;
+      modal.classList.add('active');
+      modal.onclick = function(e) { if(e.target === modal) closeModal2(); };
+    }
+    
+    function savePhoto() {
+      var file = document.getElementById('file').files[0];
+      
+      if(!file && !editingPhoto) {
+        alert('Select a photo');
+        return;
+      }
+      
+      if(!file && editingPhoto) {
+        savePhotoData(editingPhoto.url);
+        return;
+      }
+      
+      var btn = event.target;
+      btn.textContent = 'Uploading...';
+      btn.disabled = true;
+      
+      var formData = new FormData();
+      formData.append('file', file);
+      formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+      formData.append('folder', 'photography');
+      
+      fetch('https://api.cloudinary.com/v1_1/' + CLOUDINARY_CLOUD_NAME + '/image/upload', {
+        method: 'POST',
+        body: formData
+      })
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        savePhotoData(data.secure_url);
+      })
+      .catch(function() {
+        alert('Upload failed');
+        btn.textContent = 'Save';
+        btn.disabled = false;
+      });
+    }
+    
+    function savePhotoData(url) {
+      var photo = {
+        id: editingPhoto ? editingPhoto.id : Date.now(),
+        title: document.getElementById('title').value,
+        category: document.getElementById('category').value,
+        price: parseInt(document.getElementById('price').value),
+        hookLine: document.getElementById('hookLine').value,
+        philosophy: document.getElementById('philosophy').value,
+        url: url,
+        likes: editingPhoto ? editingPhoto.likes : 0,
+        comments: editingPhoto ? editingPhoto.comments : []
+      };
+      
+      if(editingPhoto) {
+        var idx = photos.findIndex(function(p) { return p.id === editingPhoto.id; });
+        photos[idx] = photo;
+      } else {
+        photos.push(photo);
+      }
+      
+      localStorage.setItem('grumpyiyer_photos', JSON.stringify(photos));
+      closeModal2();
+      render();
+    }
+    
+    function editPhoto(id) {
+      showPhotoForm(id);
+    }
+    
+    function deletePhoto(id) {
+      if(confirm('Delete?')) {
+        photos = photos.filter(function(p) { return p.id !== id; });
+        localStorage.setItem('grumpyiyer_photos', JSON.stringify(photos));
+        render();
+      }
+    }
+    
+    function openPhoto(id) {
+      var p = photos.find(function(x) { return x.id === id; });
+      if(!p) return;
+      if(!p.likes) p.likes = 0;
+      if(!p.comments) p.comments = [];
+      
+      var modal = document.getElementById('modal1');
+      var html = '<div class="modal-content" onclick="event.stopPropagation()">';
+      html += '<button class="close-btn" onclick="closeModal1()">×</button>';
+      html += '<img src="' + p.url + '" style="width:100%;max-height:60vh;object-fit:contain;">';
+      html += '<div style="padding:2rem;">';
+      if(p.hookLine) {
+        html += '<p style="color:var(--gold);font-style:italic;font-size:1.125rem;margin-bottom:1rem;">' + p.hookLine + '</p>';
+      }
+      html += '<h2 style="color:var(--deep-blue);margin-bottom:1rem;">' + p.title + '</h2>';
+      if(p.philosophy) {
+        html += '<p style="color:#666;line-height:1.8;margin-bottom:1.5rem;">' + p.philosophy + '</p>';
+      }
+      
+      // Like button
+      html += '<div style="display:flex;gap:1rem;margin:1.5rem 0;border-top:1px solid #e7e5e4;border-bottom:1px solid #e7e5e4;padding:1rem 0;">';
+      html += '<button class="btn btn-secondary" onclick="likePhoto(' + p.id + ')" style="display:flex;align-items:center;gap:0.5rem;">❤️ Like (' + p.likes + ')</button>';
+      html += '</div>';
+      
+      // Comments section
+      html += '<h3 style="margin:1.5rem 0 1rem;">Comments (' + p.comments.length + ')</h3>';
+      html += '<div style="max-height:200px;overflow-y:auto;margin-bottom:1rem;">';
+      for(var i = 0; i < p.comments.length; i++) {
+        var comment = p.comments[i];
+        html += '<div style="background:#f5f5f4;padding:0.75rem;border-radius:0.5rem;margin-bottom:0.5rem;">';
+        html += '<p style="font-weight:600;font-size:0.875rem;color:var(--deep-blue);">' + comment.author + '</p>';
+        html += '<p style="color:#666;font-size:0.875rem;">' + comment.text + '</p>';
+        html += '</div>';
+      }
+      html += '</div>';
+      html += '<div style="display:flex;gap:0.5rem;">';
+      html += '<input type="text" id="commentText" placeholder="Add a comment..." style="flex:1;padding:0.75rem;border:1px solid #e7e5e4;border-radius:0.5rem;">';
+      html += '<button class="btn btn-secondary" onclick="addComment(' + p.id + ')">Post</button>';
+      html += '</div>';
+      
+      html += '<div style="display:flex;justify-content:space-between;align-items:center;margin-top:1.5rem;padding-top:1.5rem;border-top:1px solid #e7e5e4;">';
+      html += '<p style="font-size:1.5rem;color:var(--gold);font-weight:600;">
+    
+    function addToCart(id) {
+      var p = photos.find(function(x) { return x.id === id; });
+      if(!p) return;
+      var existing = cart.find(function(item) { return item.id === id; });
+      if(existing) {
+        existing.quantity++;
+      } else {
+        cart.push({ id: p.id, title: p.title, price: p.price, url: p.url, quantity: 1 });
+      }
+      updateCart();
+      closeModal1();
+    }
+    
+    function updateCart() {
+      var count = 0;
+      for(var i = 0; i < cart.length; i++) {
+        count += cart[i].quantity;
+      }
+      document.getElementById('cartCount').textContent = count > 0 ? count : '';
+    }
+    
+    function showCart() {
+      var modal = document.getElementById('modal1');
+      var html = '<div class="modal-content" style="padding:2rem;max-width:600px;" onclick="event.stopPropagation()">';
+      html += '<button class="close-btn" onclick="closeModal1()">×</button>';
+      html += '<h2>Cart</h2>';
+      if(cart.length === 0) {
+        html += '<p>Empty</p>';
+      } else {
+        var total = 0;
+        for(var i = 0; i < cart.length; i++) {
+          var item = cart[i];
+          total += item.price * item.quantity;
+          html += '<div style="display:flex;gap:1rem;margin:1rem 0;padding:1rem;background:#f5f5f4;border-radius:0.5rem;">';
+          html += '<img src="' + item.url + '" style="width:80px;height:80px;object-fit:cover;border-radius:0.5rem;">';
+          html += '<div><h4>' + item.title + '</h4><p>$' + item.price + ' x ' + item.quantity + '</p></div>';
+          html += '</div>';
+        }
+        html += '<div style="border-top:1px solid #e7e5e4;padding-top:1rem;margin-top:1rem;">';
+        html += '<p style="font-size:1.25rem;font-weight:600;">Total: $' + total + '</p>';
+        html += '<button class="btn btn-primary" style="width:100%;margin-top:1rem;" onclick="alert(\'Checkout coming soon\')">Checkout</button>';
+        html += '</div>';
+      }
+      html += '</div>';
+      modal.innerHTML = html;
+      modal.classList.add('active');
+      modal.onclick = function(e) { if(e.target === modal) closeModal1(); };
+    }
+    
+    document.addEventListener('contextmenu', function(e) { e.preventDefault(); });
+    document.addEventListener('keydown', function(e) {
+      if((e.ctrlKey || e.metaKey) && e.key === 's') e.preventDefault();
+      if(e.key === 'F12') e.preventDefault();
+    });
+    
+    buildSidebar();
+    render();
+  </script>
+</body>
+</html> + p.price + '</span>';
+        html += '</div></div></div>';
+      }
+      document.getElementById('gallery').innerHTML = html || '<p>No photos yet</p>';
+    }
+    
+    function renderAdmin() {
+      var html = '';
+      for(var i = 0; i < photos.length; i++) {
+        var p = photos[i];
+        html += '<div style="background:white;padding:1rem;border-radius:0.5rem;">';
+        html += '<img src="' + p.url + '" style="width:100%;height:150px;object-fit:cover;border-radius:0.5rem;">';
+        html += '<h4>' + p.title + '</h4>';
+        html += '<button class="btn btn-secondary" onclick="editPhoto(' + p.id + ')">Edit</button> ';
+        html += '<button class="btn btn-primary" onclick="deletePhoto(' + p.id + ')">Delete</button>';
+        html += '</div>';
+      }
+      document.getElementById('adminGrid').innerHTML = html || '<p>No photos</p>';
+    }
+    
+    function showLogin() {
+      var modal = document.getElementById('modal1');
+      modal.innerHTML = '<div class="modal-content" style="padding:2rem;max-width:400px;" onclick="event.stopPropagation()"><button class="close-btn" onclick="closeModal1()">×</button><h2>Admin Login</h2><input type="password" id="pwd" placeholder="Password" style="width:100%;padding:0.75rem;margin:1rem 0;"><button class="btn btn-primary" style="width:100%;" onclick="login()">Login</button></div>';
+      modal.classList.add('active');
+      modal.onclick = function(e) { if(e.target === modal) closeModal1(); };
+    }
+    
+    function login() {
+      var pwd = document.getElementById('pwd').value;
+      if(pwd === ADMIN_PASSWORD) {
+        isAdmin = true;
+        document.getElementById('adminNav').style.display = 'block';
+        closeModal1();
+        nav('admin');
+      } else {
+        alert('Wrong password');
+      }
+    }
+    
+    function closeModal1() {
+      document.getElementById('modal1').classList.remove('active');
+    }
+    
+    function closeModal2() {
+      document.getElementById('modal2').classList.remove('active');
+    }
+    
+    function showPhotoForm() {
+      var modal = document.getElementById('modal2');
+      var html = '<div class="modal-content" style="padding:2rem;max-width:600px;" onclick="event.stopPropagation()">';
+      html += '<button class="close-btn" onclick="closeModal2()">×</button>';
+      html += '<h2>Add Photo</h2>';
+      html += '<div class="form-group"><label>Photo</label><input type="file" id="file" accept="image/*"></div>';
+      html += '<div class="form-group"><label>Title</label><input type="text" id="title"></div>';
+      html += '<div class="form-group"><label>Category</label><select id="category"><option>Wildlife</option><option>Landscape</option></select></div>';
+      html += '<div class="form-group"><label>Price</label><input type="number" id="price" value="150"></div>';
+      html += '<button class="btn btn-primary" style="width:100%;" onclick="savePhoto()">Save</button>';
+      html += '</div>';
+      modal.innerHTML = html;
+      modal.classList.add('active');
+      modal.onclick = function(e) { if(e.target === modal) closeModal2(); };
+    }
+    
+    function savePhoto() {
+      var file = document.getElementById('file').files[0];
+      if(!file) {
+        alert('Select a photo');
+        return;
+      }
+      
+      var btn = event.target;
+      btn.textContent = 'Uploading...';
+      btn.disabled = true;
+      
+      var formData = new FormData();
+      formData.append('file', file);
+      formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+      formData.append('folder', 'photography');
+      
+      fetch('https://api.cloudinary.com/v1_1/' + CLOUDINARY_CLOUD_NAME + '/image/upload', {
+        method: 'POST',
+        body: formData
+      })
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        var photo = {
+          id: Date.now(),
+          title: document.getElementById('title').value,
+          category: document.getElementById('category').value,
+          price: parseInt(document.getElementById('price').value),
+          url: data.secure_url
+        };
+        photos.push(photo);
+        localStorage.setItem('grumpyiyer_photos', JSON.stringify(photos));
+        closeModal2();
+        render();
+      })
+      .catch(function() {
+        alert('Upload failed');
+        btn.textContent = 'Save';
+        btn.disabled = false;
+      });
+    }
+    
+    function deletePhoto(id) {
+      if(confirm('Delete?')) {
+        photos = photos.filter(function(p) { return p.id !== id; });
+        localStorage.setItem('grumpyiyer_photos', JSON.stringify(photos));
+        render();
+      }
+    }
+    
+    function openPhoto(id) {
+      var p = photos.find(function(x) { return x.id === id; });
+      if(!p) return;
+      var modal = document.getElementById('modal1');
+      var html = '<div class="modal-content" onclick="event.stopPropagation()">';
+      html += '<button class="close-btn" onclick="closeModal1()">×</button>';
+      html += '<img src="' + p.url + '" style="width:100%;max-height:60vh;object-fit:contain;">';
+      html += '<div style="padding:2rem;">';
+      html += '<h2>' + p.title + '</h2>';
+      html += '<p style="font-size:1.5rem;color:var(--gold);margin:1rem 0;">$' + p.price + '</p>';
+      html += '<button class="btn btn-primary" onclick="addToCart(' + p.id + ')">Add to Cart</button>';
+      html += '</div></div>';
+      modal.innerHTML = html;
+      modal.classList.add('active');
+      modal.onclick = function(e) { if(e.target === modal) closeModal1(); };
+    }
+    
+    function addToCart(id) {
+      var p = photos.find(function(x) { return x.id === id; });
+      if(!p) return;
+      var existing = cart.find(function(item) { return item.id === id; });
+      if(existing) {
+        existing.quantity++;
+      } else {
+        cart.push({ id: p.id, title: p.title, price: p.price, url: p.url, quantity: 1 });
+      }
+      updateCart();
+      closeModal1();
+    }
+    
+    function updateCart() {
+      var count = 0;
+      for(var i = 0; i < cart.length; i++) {
+        count += cart[i].quantity;
+      }
+      document.getElementById('cartCount').textContent = count > 0 ? count : '';
+    }
+    
+    function showCart() {
+      var modal = document.getElementById('modal1');
+      var html = '<div class="modal-content" style="padding:2rem;max-width:600px;" onclick="event.stopPropagation()">';
+      html += '<button class="close-btn" onclick="closeModal1()">×</button>';
+      html += '<h2>Cart</h2>';
+      if(cart.length === 0) {
+        html += '<p>Empty</p>';
+      } else {
+        var total = 0;
+        for(var i = 0; i < cart.length; i++) {
+          var item = cart[i];
+          total += item.price * item.quantity;
+          html += '<div style="display:flex;gap:1rem;margin:1rem 0;padding:1rem;background:#f5f5f4;border-radius:0.5rem;">';
+          html += '<img src="' + item.url + '" style="width:80px;height:80px;object-fit:cover;border-radius:0.5rem;">';
+          html += '<div><h4>' + item.title + '</h4><p>$' + item.price + ' x ' + item.quantity + '</p></div>';
+          html += '</div>';
+        }
+        html += '<div style="border-top:1px solid #e7e5e4;padding-top:1rem;margin-top:1rem;">';
+        html += '<p style="font-size:1.25rem;font-weight:600;">Total: $' + total + '</p>';
+        html += '<button class="btn btn-primary" style="width:100%;margin-top:1rem;" onclick="alert(\'Checkout coming soon\')">Checkout</button>';
+        html += '</div>';
+      }
+      html += '</div>';
+      modal.innerHTML = html;
+      modal.classList.add('active');
+      modal.onclick = function(e) { if(e.target === modal) closeModal1(); };
+    }
+    
+    document.addEventListener('contextmenu', function(e) { e.preventDefault(); });
+    document.addEventListener('keydown', function(e) {
+      if((e.ctrlKey || e.metaKey) && e.key === 's') e.preventDefault();
+      if(e.key === 'F12') e.preventDefault();
+    });
+    
+    render();
+  </script>
+</body>
+</html> + p.price + '</p>';
+      html += '<button class="btn btn-primary" onclick="addToCart(' + p.id + ')">Add to Cart</button>';
+      html += '</div></div></div>';
+      modal.innerHTML = html;
+      modal.classList.add('active');
+      modal.onclick = function(e) { if(e.target === modal) closeModal1(); };
+    }
+    
+    function likePhoto(id) {
+      var p = photos.find(function(x) { return x.id === id; });
+      if(!p) return;
+      if(!p.likes) p.likes = 0;
+      p.likes++;
+      localStorage.setItem('grumpyiyer_photos', JSON.stringify(photos));
+      openPhoto(id);
+    }
+    
+    function addComment(id) {
+      var text = document.getElementById('commentText').value;
+      if(!text.trim()) return;
+      
+      var p = photos.find(function(x) { return x.id === id; });
+      if(!p) return;
+      if(!p.comments) p.comments = [];
+      
+      p.comments.push({
+        id: Date.now(),
+        author: 'Guest',
+        text: text,
+        date: new Date().toLocaleDateString()
+      });
+      
+      localStorage.setItem('grumpyiyer_photos', JSON.stringify(photos));
+      openPhoto(id);
+    }
+    
+    function addToCart(id) {
+      var p = photos.find(function(x) { return x.id === id; });
+      if(!p) return;
+      var existing = cart.find(function(item) { return item.id === id; });
+      if(existing) {
+        existing.quantity++;
+      } else {
+        cart.push({ id: p.id, title: p.title, price: p.price, url: p.url, quantity: 1 });
+      }
+      updateCart();
+      closeModal1();
+    }
+    
+    function updateCart() {
+      var count = 0;
+      for(var i = 0; i < cart.length; i++) {
+        count += cart[i].quantity;
+      }
+      document.getElementById('cartCount').textContent = count > 0 ? count : '';
+    }
+    
+    function showCart() {
+      var modal = document.getElementById('modal1');
+      var html = '<div class="modal-content" style="padding:2rem;max-width:600px;" onclick="event.stopPropagation()">';
+      html += '<button class="close-btn" onclick="closeModal1()">×</button>';
+      html += '<h2>Cart</h2>';
+      if(cart.length === 0) {
+        html += '<p>Empty</p>';
+      } else {
+        var total = 0;
+        for(var i = 0; i < cart.length; i++) {
+          var item = cart[i];
+          total += item.price * item.quantity;
+          html += '<div style="display:flex;gap:1rem;margin:1rem 0;padding:1rem;background:#f5f5f4;border-radius:0.5rem;">';
+          html += '<img src="' + item.url + '" style="width:80px;height:80px;object-fit:cover;border-radius:0.5rem;">';
+          html += '<div><h4>' + item.title + '</h4><p>$' + item.price + ' x ' + item.quantity + '</p></div>';
+          html += '</div>';
+        }
+        html += '<div style="border-top:1px solid #e7e5e4;padding-top:1rem;margin-top:1rem;">';
+        html += '<p style="font-size:1.25rem;font-weight:600;">Total: $' + total + '</p>';
+        html += '<button class="btn btn-primary" style="width:100%;margin-top:1rem;" onclick="alert(\'Checkout coming soon\')">Checkout</button>';
+        html += '</div>';
+      }
+      html += '</div>';
+      modal.innerHTML = html;
+      modal.classList.add('active');
+      modal.onclick = function(e) { if(e.target === modal) closeModal1(); };
+    }
+    
+    document.addEventListener('contextmenu', function(e) { e.preventDefault(); });
+    document.addEventListener('keydown', function(e) {
+      if((e.ctrlKey || e.metaKey) && e.key === 's') e.preventDefault();
+      if(e.key === 'F12') e.preventDefault();
+    });
+    
+    render();
+  </script>
+</body>
+</html> + p.price + '</span>';
+        html += '</div></div></div>';
+      }
+      document.getElementById('gallery').innerHTML = html || '<p>No photos yet</p>';
+    }
+    
+    function renderAdmin() {
+      var html = '';
+      for(var i = 0; i < photos.length; i++) {
+        var p = photos[i];
+        html += '<div style="background:white;padding:1rem;border-radius:0.5rem;">';
+        html += '<img src="' + p.url + '" style="width:100%;height:150px;object-fit:cover;border-radius:0.5rem;">';
+        html += '<h4>' + p.title + '</h4>';
+        html += '<button class="btn btn-secondary" onclick="editPhoto(' + p.id + ')">Edit</button> ';
+        html += '<button class="btn btn-primary" onclick="deletePhoto(' + p.id + ')">Delete</button>';
+        html += '</div>';
+      }
+      document.getElementById('adminGrid').innerHTML = html || '<p>No photos</p>';
+    }
+    
+    function showLogin() {
+      var modal = document.getElementById('modal1');
+      modal.innerHTML = '<div class="modal-content" style="padding:2rem;max-width:400px;" onclick="event.stopPropagation()"><button class="close-btn" onclick="closeModal1()">×</button><h2>Admin Login</h2><input type="password" id="pwd" placeholder="Password" style="width:100%;padding:0.75rem;margin:1rem 0;"><button class="btn btn-primary" style="width:100%;" onclick="login()">Login</button></div>';
+      modal.classList.add('active');
+      modal.onclick = function(e) { if(e.target === modal) closeModal1(); };
+    }
+    
+    function login() {
+      var pwd = document.getElementById('pwd').value;
+      if(pwd === ADMIN_PASSWORD) {
+        isAdmin = true;
+        document.getElementById('adminNav').style.display = 'block';
+        closeModal1();
+        nav('admin');
+      } else {
+        alert('Wrong password');
+      }
+    }
+    
+    function closeModal1() {
+      document.getElementById('modal1').classList.remove('active');
+    }
+    
+    function closeModal2() {
+      document.getElementById('modal2').classList.remove('active');
+    }
+    
+    function showPhotoForm() {
+      var modal = document.getElementById('modal2');
+      var html = '<div class="modal-content" style="padding:2rem;max-width:600px;" onclick="event.stopPropagation()">';
+      html += '<button class="close-btn" onclick="closeModal2()">×</button>';
+      html += '<h2>Add Photo</h2>';
+      html += '<div class="form-group"><label>Photo</label><input type="file" id="file" accept="image/*"></div>';
+      html += '<div class="form-group"><label>Title</label><input type="text" id="title"></div>';
+      html += '<div class="form-group"><label>Category</label><select id="category"><option>Wildlife</option><option>Landscape</option></select></div>';
+      html += '<div class="form-group"><label>Price</label><input type="number" id="price" value="150"></div>';
+      html += '<button class="btn btn-primary" style="width:100%;" onclick="savePhoto()">Save</button>';
+      html += '</div>';
+      modal.innerHTML = html;
+      modal.classList.add('active');
+      modal.onclick = function(e) { if(e.target === modal) closeModal2(); };
+    }
+    
+    function savePhoto() {
+      var file = document.getElementById('file').files[0];
+      if(!file) {
+        alert('Select a photo');
+        return;
+      }
+      
+      var btn = event.target;
+      btn.textContent = 'Uploading...';
+      btn.disabled = true;
+      
+      var formData = new FormData();
+      formData.append('file', file);
+      formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+      formData.append('folder', 'photography');
+      
+      fetch('https://api.cloudinary.com/v1_1/' + CLOUDINARY_CLOUD_NAME + '/image/upload', {
+        method: 'POST',
+        body: formData
+      })
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        var photo = {
+          id: Date.now(),
+          title: document.getElementById('title').value,
+          category: document.getElementById('category').value,
+          price: parseInt(document.getElementById('price').value),
+          url: data.secure_url
+        };
+        photos.push(photo);
+        localStorage.setItem('grumpyiyer_photos', JSON.stringify(photos));
+        closeModal2();
+        render();
+      })
+      .catch(function() {
+        alert('Upload failed');
+        btn.textContent = 'Save';
+        btn.disabled = false;
+      });
+    }
+    
+    function deletePhoto(id) {
+      if(confirm('Delete?')) {
+        photos = photos.filter(function(p) { return p.id !== id; });
+        localStorage.setItem('grumpyiyer_photos', JSON.stringify(photos));
+        render();
+      }
+    }
+    
+    function openPhoto(id) {
+      var p = photos.find(function(x) { return x.id === id; });
+      if(!p) return;
+      var modal = document.getElementById('modal1');
+      var html = '<div class="modal-content" onclick="event.stopPropagation()">';
+      html += '<button class="close-btn" onclick="closeModal1()">×</button>';
+      html += '<img src="' + p.url + '" style="width:100%;max-height:60vh;object-fit:contain;">';
+      html += '<div style="padding:2rem;">';
+      html += '<h2>' + p.title + '</h2>';
+      html += '<p style="font-size:1.5rem;color:var(--gold);margin:1rem 0;">$' + p.price + '</p>';
+      html += '<button class="btn btn-primary" onclick="addToCart(' + p.id + ')">Add to Cart</button>';
+      html += '</div></div>';
+      modal.innerHTML = html;
+      modal.classList.add('active');
+      modal.onclick = function(e) { if(e.target === modal) closeModal1(); };
+    }
+    
+    function addToCart(id) {
+      var p = photos.find(function(x) { return x.id === id; });
+      if(!p) return;
+      var existing = cart.find(function(item) { return item.id === id; });
+      if(existing) {
+        existing.quantity++;
+      } else {
+        cart.push({ id: p.id, title: p.title, price: p.price, url: p.url, quantity: 1 });
+      }
+      updateCart();
+      closeModal1();
+    }
+    
+    function updateCart() {
+      var count = 0;
+      for(var i = 0; i < cart.length; i++) {
+        count += cart[i].quantity;
+      }
+      document.getElementById('cartCount').textContent = count > 0 ? count : '';
+    }
+    
+    function showCart() {
+      var modal = document.getElementById('modal1');
+      var html = '<div class="modal-content" style="padding:2rem;max-width:600px;" onclick="event.stopPropagation()">';
+      html += '<button class="close-btn" onclick="closeModal1()">×</button>';
+      html += '<h2>Cart</h2>';
+      if(cart.length === 0) {
+        html += '<p>Empty</p>';
+      } else {
+        var total = 0;
+        for(var i = 0; i < cart.length; i++) {
+          var item = cart[i];
+          total += item.price * item.quantity;
+          html += '<div style="display:flex;gap:1rem;margin:1rem 0;padding:1rem;background:#f5f5f4;border-radius:0.5rem;">';
+          html += '<img src="' + item.url + '" style="width:80px;height:80px;object-fit:cover;border-radius:0.5rem;">';
+          html += '<div><h4>' + item.title + '</h4><p>$' + item.price + ' x ' + item.quantity + '</p></div>';
+          html += '</div>';
+        }
+        html += '<div style="border-top:1px solid #e7e5e4;padding-top:1rem;margin-top:1rem;">';
+        html += '<p style="font-size:1.25rem;font-weight:600;">Total: $' + total + '</p>';
+        html += '<button class="btn btn-primary" style="width:100%;margin-top:1rem;" onclick="alert(\'Checkout coming soon\')">Checkout</button>';
+        html += '</div>';
+      }
+      html += '</div>';
+      modal.innerHTML = html;
+      modal.classList.add('active');
+      modal.onclick = function(e) { if(e.target === modal) closeModal1(); };
+    }
+    
+    document.addEventListener('contextmenu', function(e) { e.preventDefault(); });
+    document.addEventListener('keydown', function(e) {
+      if((e.ctrlKey || e.metaKey) && e.key === 's') e.preventDefault();
+      if(e.key === 'F12') e.preventDefault();
+    });
+    
+    render();
+  </script>
+</body>
+</html> + p.price + '</p>';
+        html += '<div style="display:flex;gap:0.5rem;">';
+        html += '<button class="btn btn-secondary btn-small" onclick="editPhoto(' + p.id + ')">Edit</button>';
+        html += '<button class="btn btn-primary btn-small" onclick="deletePhoto(' + p.id + ')">Delete</button>';
         html += '</div></div>';
+      }
+      document.getElementById('adminGrid').innerHTML = html || '<p>No photos</p>';
+    }
+    
+    function showSettings() {
+      var modal = document.getElementById('modal2');
+      var html = '<div class="modal-content" style="padding:2rem;max-width:600px;" onclick="event.stopPropagation()">';
+      html += '<button class="close-btn" onclick="closeModal2()">×</button>';
+      html += '<h2>Settings</h2>';
+      html += '<div class="form-group"><label>Logo Upload</label><input type="file" id="logoFile" accept="image/*"><p style="font-size:0.875rem;color:#666;margin-top:0.5rem;">Upload your custom logo</p></div>';
+      html += '<img src="' + settings.logoUrl + '" style="width:180px;height:auto;margin:1rem 0;border-radius:0.5rem;">';
+      html += '<button class="btn btn-primary" style="width:100%;margin-top:1rem;" onclick="saveSettings()">Save Settings</button>';
+      html += '</div>';
+      modal.innerHTML = html;
+      modal.classList.add('active');
+      modal.onclick = function(e) { if(e.target === modal) closeModal2(); };
+    }
+    
+    function saveSettings() {
+      var file = document.getElementById('logoFile').files[0];
+      if(!file) {
+        alert('No changes made');
+        closeModal2();
+        return;
+      }
+      
+      var btn = event.target;
+      btn.textContent = 'Uploading...';
+      btn.disabled = true;
+      
+      var formData = new FormData();
+      formData.append('file', file);
+      formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+      formData.append('folder', 'settings');
+      
+      fetch('https://api.cloudinary.com/v1_1/' + CLOUDINARY_CLOUD_NAME + '/image/upload', {
+        method: 'POST',
+        body: formData
+      })
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        settings.logoUrl = data.secure_url;
+        localStorage.setItem('grumpyiyer_settings', JSON.stringify(settings));
+        buildSidebar();
+        alert('Logo updated!');
+        closeModal2();
+      })
+      .catch(function() {
+        alert('Upload failed');
+        btn.textContent = 'Save Settings';
+        btn.disabled = false;
+      });
+    }
+    
+    function showCategoryManager() {
+      var modal = document.getElementById('modal2');
+      var html = '<div class="modal-content" style="padding:2rem;max-width:600px;" onclick="event.stopPropagation()">';
+      html += '<button class="close-btn" onclick="closeModal2()">×</button>';
+      html += '<h2>Manage Categories</h2>';
+      html += '<p style="color:#666;margin-bottom:1rem;">Add or remove photo categories</p>';
+      html += '<div id="categoryList" style="margin-bottom:1rem;">';
+      for(var i = 0; i < categories.length; i++) {
+        html += '<div style="display:flex;justify-content:space-between;align-items:center;padding:0.75rem;background:#f5f5f4;border-radius:0.5rem;margin-bottom:0.5rem;">';
+        html += '<span>' + categories[i] + '</span>';
+        html += '<button class="btn btn-primary btn-small" onclick="removeCategory(\'' + categories[i] + '\')">Remove</button>';
+        html += '</div>';
+      }
+      html += '</div>';
+      html += '<div style="display:flex;gap:0.5rem;">';
+      html += '<input type="text" id="newCategory" placeholder="New category name..." style="flex:1;padding:0.75rem;border:1px solid #e7e5e4;border-radius:0.5rem;">';
+      html += '<button class="btn btn-secondary" onclick="addCategory()">Add</button>';
+      html += '</div></div>';
+      modal.innerHTML = html;
+      modal.classList.add('active');
+      modal.onclick = function(e) { if(e.target === modal) closeModal2(); };
+    }
+    
+    function addCategory() {
+      var name = document.getElementById('newCategory').value.trim();
+      if(!name) return;
+      if(categories.indexOf(name) !== -1) {
+        alert('Category already exists');
+        return;
+      }
+      categories.push(name);
+      localStorage.setItem('grumpyiyer_categories', JSON.stringify(categories));
+      buildSidebar();
+      showCategoryManager();
+    }
+    
+    function removeCategory(name) {
+      if(!confirm('Remove "' + name + '"?')) return;
+      categories = categories.filter(function(c) { return c !== name; });
+      localStorage.setItem('grumpyiyer_categories', JSON.stringify(categories));
+      buildSidebar();
+      showCategoryManager();
+    }
+    
+    function showBlogForm(id) {
+      editingBlogPost = id ? blogPosts.find(function(p) { return p.id === id; }) : null;
+      var modal = document.getElementById('modal2');
+      var html = '<div class="modal-content" style="padding:2rem;max-width:700px;max-height:90vh;overflow-y:auto;" onclick="event.stopPropagation()">';
+      html += '<button class="close-btn" onclick="closeModal2()">×</button>';
+      html += '<h2>' + (editingBlogPost ? 'Edit' : 'New') + ' Blog Post</h2>';
+      html += '<div class="form-group"><label>Featured Image (Optional)</label><input type="file" id="blogImage" accept="image/*"></div>';
+      html += '<div class="form-group"><label>Title</label><input type="text" id="blogTitle" value="' + (editingBlogPost ? editingBlogPost.title : '') + '"></div>';
+      html += '<div class="form-group"><label>Date</label><input type="text" id="blogDate" value="' + (editingBlogPost ? editingBlogPost.date : new Date().toLocaleDateString()) + '"></div>';
+      html += '<div class="form-group"><label>Excerpt</label><textarea id="blogExcerpt" rows="2">' + (editingBlogPost ? (editingBlogPost.excerpt || '') : '') + '</textarea></div>';
+      html += '<div class="form-group"><label>Content</label><textarea id="blogContent" rows="10">' + (editingBlogPost ? editingBlogPost.content : '') + '</textarea></div>';
+      html += '<button class="btn btn-primary" style="width:100%;" onclick="saveBlogPost()">Save Post</button>';
+      html += '</div>';
+      modal.innerHTML = html;
+      modal.classList.add('active');
+      modal.onclick = function(e) { if(e.target === modal) closeModal2(); };
+    }
+    
+    function saveBlogPost() {
+      var file = document.getElementById('blogImage').files[0];
+      var title = document.getElementById('blogTitle').value;
+      var content = document.getElementById('blogContent').value;
+      
+      if(!title || !content) {
+        alert('Title and content required');
+        return;
+      }
+      
+      if(file) {
+        var btn = event.target;
+        btn.textContent = 'Uploading...';
+        btn.disabled = true;
+        
+        var formData = new FormData();
+        formData.append('file', file);
+        formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+        formData.append('folder', 'blog');
+        
+        fetch('https://api.cloudinary.com/v1_1/' + CLOUDINARY_CLOUD_NAME + '/image/upload', {
+          method: 'POST',
+          body: formData
+        })
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+          saveBlogData(data.secure_url);
+        })
+        .catch(function() {
+          alert('Upload failed');
+          btn.textContent = 'Save Post';
+          btn.disabled = false;
+        });
+      } else {
+        saveBlogData(editingBlogPost ? editingBlogPost.image : null);
+      }
+    }
+    
+    function saveBlogData(imageUrl) {
+      var post = {
+        id: editingBlogPost ? editingBlogPost.id : Date.now(),
+        title: document.getElementById('blogTitle').value,
+        date: document.getElementById('blogDate').value,
+        excerpt: document.getElementById('blogExcerpt').value,
+        content: document.getElementById('blogContent').value,
+        image: imageUrl
+      };
+      
+      if(editingBlogPost) {
+        var idx = blogPosts.findIndex(function(p) { return p.id === editingBlogPost.id; });
+        blogPosts[idx] = post;
+      } else {
+        blogPosts.push(post);
+      }
+      
+      localStorage.setItem('grumpyiyer_blog', JSON.stringify(blogPosts));
+      closeModal2();
+      currentPage = 'blog';
+      render();
+    }
+    
+    function openBlogPost(id) {
+      var post = blogPosts.find(function(p) { return p.id === id; });
+      if(!post) return;
+      
+      var modal = document.getElementById('modal1');
+      var html = '<div class="modal-content" style="max-width:800px;" onclick="event.stopPropagation()">';
+      html += '<button class="close-btn" onclick="closeModal1()">×</button>';
+      if(post.image) {
+        html += '<img src="' + post.image + '" style="width:100%;height:300px;object-fit:cover;">';
+      }
+      html += '<div style="padding:2rem;">';
+      html += '<p style="color:var(--purple);font-size:0.875rem;margin-bottom:0.5rem;">' + post.date + '</p>';
+      html += '<h2 style="color:var(--deep-blue);font-size:2rem;margin-bottom:1rem;">' + post.title + '</h2>';
+      html += '<div style="color:#666;line-height:1.8;white-space:pre-wrap;">' + post.content + '</div>';
+      html += '</div></div>';
+      modal.innerHTML = html;
+      modal.classList.add('active');
+      modal.onclick = function(e) { if(e.target === modal) closeModal1(); };
+    }
+    
+    function showLogin() {
+      var modal = document.getElementById('modal1');
+      modal.innerHTML = '<div class="modal-content" style="padding:2rem;max-width:400px;" onclick="event.stopPropagation()"><button class="close-btn" onclick="closeModal1()">×</button><h2>Admin Login</h2><input type="password" id="pwd" placeholder="Password" style="width:100%;padding:0.75rem;margin:1rem 0;"><button class="btn btn-primary" style="width:100%;" onclick="login()">Login</button></div>';
+      modal.classList.add('active');
+      modal.onclick = function(e) { if(e.target === modal) closeModal1(); };
+    }
+    
+    function login() {
+      var pwd = document.getElementById('pwd').value;
+      if(pwd === ADMIN_PASSWORD) {
+        isAdmin = true;
+        buildSidebar();
+        closeModal1();
+        currentPage = 'admin';
+        render();
+      } else {
+        alert('Wrong password');
+      }
+    }
+    
+    function closeModal1() {
+      document.getElementById('modal1').classList.remove('active');
+    }
+    
+    function closeModal2() {
+      document.getElementById('modal2').classList.remove('active');
+    }
+    
+    function showPhotoForm(id) {
+      editingPhoto = id ? photos.find(function(p) { return p.id === id; }) : null;
+      var modal = document.getElementById('modal2');
+      var html = '<div class="modal-content" style="padding:2rem;max-width:600px;" onclick="event.stopPropagation()">';
+      html += '<button class="close-btn" onclick="closeModal2()">×</button>';
+      html += '<h2>' + (editingPhoto ? 'Edit' : 'Add') + ' Photo</h2>';
+      html += '<div class="form-group"><label>Photo</label><input type="file" id="file" accept="image/*"></div>';
+      if(editingPhoto) {
+        html += '<img src="' + editingPhoto.url + '" style="width:100%;height:200px;object-fit:cover;border-radius:0.5rem;margin-bottom:1rem;">';
+      }
+      html += '<div class="form-group"><label>Title</label><input type="text" id="title" value="' + (editingPhoto ? editingPhoto.title : '') + '"></div>';
+      html += '<div class="form-group"><label>Category</label><select id="category">';
+      for(var i = 0; i < categories.length; i++) {
+        var selected = editingPhoto && editingPhoto.category === categories[i] ? ' selected' : '';
+        html += '<option' + selected + '>' + categories[i] + '</option>';
+      }
+      html += '</select></div>';
+      html += '<div class="form-group"><label>Price</label><input type="number" id="price" value="' + (editingPhoto ? editingPhoto.price : 150) + '"></div>';
+      html += '<div class="form-group"><label>Hook Line</label><input type="text" id="hookLine" value="' + (editingPhoto ? (editingPhoto.hookLine || '') : '') + '" placeholder="A captivating phrase..."></div>';
+      html += '<div class="form-group"><label>Philosophy</label><textarea id="philosophy" rows="4">' + (editingPhoto ? (editingPhoto.philosophy || '') : '') + '</textarea></div>';
+      html += '<button class="btn btn-primary" style="width:100%;" onclick="savePhoto()">Save</button>';
+      html += '</div>';
+      modal.innerHTML = html;
+      modal.classList.add('active');
+      modal.onclick = function(e) { if(e.target === modal) closeModal2(); };
+    }
+    
+    function savePhoto() {
+      var file = document.getElementById('file').files[0];
+      
+      if(!file && !editingPhoto) {
+        alert('Select a photo');
+        return;
+      }
+      
+      if(!file && editingPhoto) {
+        savePhotoData(editingPhoto.url);
+        return;
+      }
+      
+      var btn = event.target;
+      btn.textContent = 'Uploading...';
+      btn.disabled = true;
+      
+      var formData = new FormData();
+      formData.append('file', file);
+      formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+      formData.append('folder', 'photography');
+      
+      fetch('https://api.cloudinary.com/v1_1/' + CLOUDINARY_CLOUD_NAME + '/image/upload', {
+        method: 'POST',
+        body: formData
+      })
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        savePhotoData(data.secure_url);
+      })
+      .catch(function() {
+        alert('Upload failed');
+        btn.textContent = 'Save';
+        btn.disabled = false;
+      });
+    }
+    
+    function savePhotoData(url) {
+      var photo = {
+        id: editingPhoto ? editingPhoto.id : Date.now(),
+        title: document.getElementById('title').value,
+        category: document.getElementById('category').value,
+        price: parseInt(document.getElementById('price').value),
+        hookLine: document.getElementById('hookLine').value,
+        philosophy: document.getElementById('philosophy').value,
+        url: url,
+        likes: editingPhoto ? editingPhoto.likes : 0,
+        comments: editingPhoto ? editingPhoto.comments : []
+      };
+      
+      if(editingPhoto) {
+        var idx = photos.findIndex(function(p) { return p.id === editingPhoto.id; });
+        photos[idx] = photo;
+      } else {
+        photos.push(photo);
+      }
+      
+      localStorage.setItem('grumpyiyer_photos', JSON.stringify(photos));
+      closeModal2();
+      render();
+    }
+    
+    function editPhoto(id) {
+      showPhotoForm(id);
+    }
+    
+    function deletePhoto(id) {
+      if(confirm('Delete?')) {
+        photos = photos.filter(function(p) { return p.id !== id; });
+        localStorage.setItem('grumpyiyer_photos', JSON.stringify(photos));
+        render();
+      }
+    }
+    
+    function openPhoto(id) {
+      var p = photos.find(function(x) { return x.id === id; });
+      if(!p) return;
+      if(!p.likes) p.likes = 0;
+      if(!p.comments) p.comments = [];
+      
+      var modal = document.getElementById('modal1');
+      var html = '<div class="modal-content" onclick="event.stopPropagation()">';
+      html += '<button class="close-btn" onclick="closeModal1()">×</button>';
+      html += '<img src="' + p.url + '" style="width:100%;max-height:60vh;object-fit:contain;">';
+      html += '<div style="padding:2rem;">';
+      if(p.hookLine) {
+        html += '<p style="color:var(--gold);font-style:italic;font-size:1.125rem;margin-bottom:1rem;">' + p.hookLine + '</p>';
+      }
+      html += '<h2 style="color:var(--deep-blue);margin-bottom:1rem;">' + p.title + '</h2>';
+      if(p.philosophy) {
+        html += '<p style="color:#666;line-height:1.8;margin-bottom:1.5rem;">' + p.philosophy + '</p>';
+      }
+      
+      // Like button
+      html += '<div style="display:flex;gap:1rem;margin:1.5rem 0;border-top:1px solid #e7e5e4;border-bottom:1px solid #e7e5e4;padding:1rem 0;">';
+      html += '<button class="btn btn-secondary" onclick="likePhoto(' + p.id + ')" style="display:flex;align-items:center;gap:0.5rem;">❤️ Like (' + p.likes + ')</button>';
+      html += '</div>';
+      
+      // Comments section
+      html += '<h3 style="margin:1.5rem 0 1rem;">Comments (' + p.comments.length + ')</h3>';
+      html += '<div style="max-height:200px;overflow-y:auto;margin-bottom:1rem;">';
+      for(var i = 0; i < p.comments.length; i++) {
+        var comment = p.comments[i];
+        html += '<div style="background:#f5f5f4;padding:0.75rem;border-radius:0.5rem;margin-bottom:0.5rem;">';
+        html += '<p style="font-weight:600;font-size:0.875rem;color:var(--deep-blue);">' + comment.author + '</p>';
+        html += '<p style="color:#666;font-size:0.875rem;">' + comment.text + '</p>';
+        html += '</div>';
+      }
+      html += '</div>';
+      html += '<div style="display:flex;gap:0.5rem;">';
+      html += '<input type="text" id="commentText" placeholder="Add a comment..." style="flex:1;padding:0.75rem;border:1px solid #e7e5e4;border-radius:0.5rem;">';
+      html += '<button class="btn btn-secondary" onclick="addComment(' + p.id + ')">Post</button>';
+      html += '</div>';
+      
+      html += '<div style="display:flex;justify-content:space-between;align-items:center;margin-top:1.5rem;padding-top:1.5rem;border-top:1px solid #e7e5e4;">';
+      html += '<p style="font-size:1.5rem;color:var(--gold);font-weight:600;">
+    
+    function addToCart(id) {
+      var p = photos.find(function(x) { return x.id === id; });
+      if(!p) return;
+      var existing = cart.find(function(item) { return item.id === id; });
+      if(existing) {
+        existing.quantity++;
+      } else {
+        cart.push({ id: p.id, title: p.title, price: p.price, url: p.url, quantity: 1 });
+      }
+      updateCart();
+      closeModal1();
+    }
+    
+    function updateCart() {
+      var count = 0;
+      for(var i = 0; i < cart.length; i++) {
+        count += cart[i].quantity;
+      }
+      document.getElementById('cartCount').textContent = count > 0 ? count : '';
+    }
+    
+    function showCart() {
+      var modal = document.getElementById('modal1');
+      var html = '<div class="modal-content" style="padding:2rem;max-width:600px;" onclick="event.stopPropagation()">';
+      html += '<button class="close-btn" onclick="closeModal1()">×</button>';
+      html += '<h2>Cart</h2>';
+      if(cart.length === 0) {
+        html += '<p>Empty</p>';
+      } else {
+        var total = 0;
+        for(var i = 0; i < cart.length; i++) {
+          var item = cart[i];
+          total += item.price * item.quantity;
+          html += '<div style="display:flex;gap:1rem;margin:1rem 0;padding:1rem;background:#f5f5f4;border-radius:0.5rem;">';
+          html += '<img src="' + item.url + '" style="width:80px;height:80px;object-fit:cover;border-radius:0.5rem;">';
+          html += '<div><h4>' + item.title + '</h4><p>$' + item.price + ' x ' + item.quantity + '</p></div>';
+          html += '</div>';
+        }
+        html += '<div style="border-top:1px solid #e7e5e4;padding-top:1rem;margin-top:1rem;">';
+        html += '<p style="font-size:1.25rem;font-weight:600;">Total: $' + total + '</p>';
+        html += '<button class="btn btn-primary" style="width:100%;margin-top:1rem;" onclick="alert(\'Checkout coming soon\')">Checkout</button>';
+        html += '</div>';
+      }
+      html += '</div>';
+      modal.innerHTML = html;
+      modal.classList.add('active');
+      modal.onclick = function(e) { if(e.target === modal) closeModal1(); };
+    }
+    
+    document.addEventListener('contextmenu', function(e) { e.preventDefault(); });
+    document.addEventListener('keydown', function(e) {
+      if((e.ctrlKey || e.metaKey) && e.key === 's') e.preventDefault();
+      if(e.key === 'F12') e.preventDefault();
+    });
+    
+    render();
+  </script>
+</body>
+</html> + p.price + '</span>';
+        html += '</div></div></div>';
+      }
+      document.getElementById('gallery').innerHTML = html || '<p>No photos yet</p>';
+    }
+    
+    function renderAdmin() {
+      var html = '';
+      for(var i = 0; i < photos.length; i++) {
+        var p = photos[i];
+        html += '<div style="background:white;padding:1rem;border-radius:0.5rem;">';
+        html += '<img src="' + p.url + '" style="width:100%;height:150px;object-fit:cover;border-radius:0.5rem;">';
+        html += '<h4>' + p.title + '</h4>';
+        html += '<button class="btn btn-secondary" onclick="editPhoto(' + p.id + ')">Edit</button> ';
+        html += '<button class="btn btn-primary" onclick="deletePhoto(' + p.id + ')">Delete</button>';
+        html += '</div>';
+      }
+      document.getElementById('adminGrid').innerHTML = html || '<p>No photos</p>';
+    }
+    
+    function showLogin() {
+      var modal = document.getElementById('modal1');
+      modal.innerHTML = '<div class="modal-content" style="padding:2rem;max-width:400px;" onclick="event.stopPropagation()"><button class="close-btn" onclick="closeModal1()">×</button><h2>Admin Login</h2><input type="password" id="pwd" placeholder="Password" style="width:100%;padding:0.75rem;margin:1rem 0;"><button class="btn btn-primary" style="width:100%;" onclick="login()">Login</button></div>';
+      modal.classList.add('active');
+      modal.onclick = function(e) { if(e.target === modal) closeModal1(); };
+    }
+    
+    function login() {
+      var pwd = document.getElementById('pwd').value;
+      if(pwd === ADMIN_PASSWORD) {
+        isAdmin = true;
+        document.getElementById('adminNav').style.display = 'block';
+        closeModal1();
+        nav('admin');
+      } else {
+        alert('Wrong password');
+      }
+    }
+    
+    function closeModal1() {
+      document.getElementById('modal1').classList.remove('active');
+    }
+    
+    function closeModal2() {
+      document.getElementById('modal2').classList.remove('active');
+    }
+    
+    function showPhotoForm() {
+      var modal = document.getElementById('modal2');
+      var html = '<div class="modal-content" style="padding:2rem;max-width:600px;" onclick="event.stopPropagation()">';
+      html += '<button class="close-btn" onclick="closeModal2()">×</button>';
+      html += '<h2>Add Photo</h2>';
+      html += '<div class="form-group"><label>Photo</label><input type="file" id="file" accept="image/*"></div>';
+      html += '<div class="form-group"><label>Title</label><input type="text" id="title"></div>';
+      html += '<div class="form-group"><label>Category</label><select id="category"><option>Wildlife</option><option>Landscape</option></select></div>';
+      html += '<div class="form-group"><label>Price</label><input type="number" id="price" value="150"></div>';
+      html += '<button class="btn btn-primary" style="width:100%;" onclick="savePhoto()">Save</button>';
+      html += '</div>';
+      modal.innerHTML = html;
+      modal.classList.add('active');
+      modal.onclick = function(e) { if(e.target === modal) closeModal2(); };
+    }
+    
+    function savePhoto() {
+      var file = document.getElementById('file').files[0];
+      if(!file) {
+        alert('Select a photo');
+        return;
+      }
+      
+      var btn = event.target;
+      btn.textContent = 'Uploading...';
+      btn.disabled = true;
+      
+      var formData = new FormData();
+      formData.append('file', file);
+      formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+      formData.append('folder', 'photography');
+      
+      fetch('https://api.cloudinary.com/v1_1/' + CLOUDINARY_CLOUD_NAME + '/image/upload', {
+        method: 'POST',
+        body: formData
+      })
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        var photo = {
+          id: Date.now(),
+          title: document.getElementById('title').value,
+          category: document.getElementById('category').value,
+          price: parseInt(document.getElementById('price').value),
+          url: data.secure_url
+        };
+        photos.push(photo);
+        localStorage.setItem('grumpyiyer_photos', JSON.stringify(photos));
+        closeModal2();
+        render();
+      })
+      .catch(function() {
+        alert('Upload failed');
+        btn.textContent = 'Save';
+        btn.disabled = false;
+      });
+    }
+    
+    function deletePhoto(id) {
+      if(confirm('Delete?')) {
+        photos = photos.filter(function(p) { return p.id !== id; });
+        localStorage.setItem('grumpyiyer_photos', JSON.stringify(photos));
+        render();
+      }
+    }
+    
+    function openPhoto(id) {
+      var p = photos.find(function(x) { return x.id === id; });
+      if(!p) return;
+      var modal = document.getElementById('modal1');
+      var html = '<div class="modal-content" onclick="event.stopPropagation()">';
+      html += '<button class="close-btn" onclick="closeModal1()">×</button>';
+      html += '<img src="' + p.url + '" style="width:100%;max-height:60vh;object-fit:contain;">';
+      html += '<div style="padding:2rem;">';
+      html += '<h2>' + p.title + '</h2>';
+      html += '<p style="font-size:1.5rem;color:var(--gold);margin:1rem 0;">$' + p.price + '</p>';
+      html += '<button class="btn btn-primary" onclick="addToCart(' + p.id + ')">Add to Cart</button>';
+      html += '</div></div>';
+      modal.innerHTML = html;
+      modal.classList.add('active');
+      modal.onclick = function(e) { if(e.target === modal) closeModal1(); };
+    }
+    
+    function addToCart(id) {
+      var p = photos.find(function(x) { return x.id === id; });
+      if(!p) return;
+      var existing = cart.find(function(item) { return item.id === id; });
+      if(existing) {
+        existing.quantity++;
+      } else {
+        cart.push({ id: p.id, title: p.title, price: p.price, url: p.url, quantity: 1 });
+      }
+      updateCart();
+      closeModal1();
+    }
+    
+    function updateCart() {
+      var count = 0;
+      for(var i = 0; i < cart.length; i++) {
+        count += cart[i].quantity;
+      }
+      document.getElementById('cartCount').textContent = count > 0 ? count : '';
+    }
+    
+    function showCart() {
+      var modal = document.getElementById('modal1');
+      var html = '<div class="modal-content" style="padding:2rem;max-width:600px;" onclick="event.stopPropagation()">';
+      html += '<button class="close-btn" onclick="closeModal1()">×</button>';
+      html += '<h2>Cart</h2>';
+      if(cart.length === 0) {
+        html += '<p>Empty</p>';
+      } else {
+        var total = 0;
+        for(var i = 0; i < cart.length; i++) {
+          var item = cart[i];
+          total += item.price * item.quantity;
+          html += '<div style="display:flex;gap:1rem;margin:1rem 0;padding:1rem;background:#f5f5f4;border-radius:0.5rem;">';
+          html += '<img src="' + item.url + '" style="width:80px;height:80px;object-fit:cover;border-radius:0.5rem;">';
+          html += '<div><h4>' + item.title + '</h4><p>$' + item.price + ' x ' + item.quantity + '</p></div>';
+          html += '</div>';
+        }
+        html += '<div style="border-top:1px solid #e7e5e4;padding-top:1rem;margin-top:1rem;">';
+        html += '<p style="font-size:1.25rem;font-weight:600;">Total: $' + total + '</p>';
+        html += '<button class="btn btn-primary" style="width:100%;margin-top:1rem;" onclick="alert(\'Checkout coming soon\')">Checkout</button>';
+        html += '</div>';
+      }
+      html += '</div>';
+      modal.innerHTML = html;
+      modal.classList.add('active');
+      modal.onclick = function(e) { if(e.target === modal) closeModal1(); };
+    }
+    
+    document.addEventListener('contextmenu', function(e) { e.preventDefault(); });
+    document.addEventListener('keydown', function(e) {
+      if((e.ctrlKey || e.metaKey) && e.key === 's') e.preventDefault();
+      if(e.key === 'F12') e.preventDefault();
+    });
+    
+    render();
+  </script>
+</body>
+</html> + p.price + '</p>';
+      html += '<button class="btn btn-primary" onclick="addToCart(' + p.id + ')">Add to Cart</button>';
+      html += '</div></div></div>';
+      modal.innerHTML = html;
+      modal.classList.add('active');
+      modal.onclick = function(e) { if(e.target === modal) closeModal1(); };
+    }
+    
+    function likePhoto(id) {
+      var p = photos.find(function(x) { return x.id === id; });
+      if(!p) return;
+      if(!p.likes) p.likes = 0;
+      p.likes++;
+      localStorage.setItem('grumpyiyer_photos', JSON.stringify(photos));
+      openPhoto(id);
+    }
+    
+    function addComment(id) {
+      var text = document.getElementById('commentText').value;
+      if(!text.trim()) return;
+      
+      var p = photos.find(function(x) { return x.id === id; });
+      if(!p) return;
+      if(!p.comments) p.comments = [];
+      
+      p.comments.push({
+        id: Date.now(),
+        author: 'Guest',
+        text: text,
+        date: new Date().toLocaleDateString()
+      });
+      
+      localStorage.setItem('grumpyiyer_photos', JSON.stringify(photos));
+      openPhoto(id);
+    }
+    
+    function addToCart(id) {
+      var p = photos.find(function(x) { return x.id === id; });
+      if(!p) return;
+      var existing = cart.find(function(item) { return item.id === id; });
+      if(existing) {
+        existing.quantity++;
+      } else {
+        cart.push({ id: p.id, title: p.title, price: p.price, url: p.url, quantity: 1 });
+      }
+      updateCart();
+      closeModal1();
+    }
+    
+    function updateCart() {
+      var count = 0;
+      for(var i = 0; i < cart.length; i++) {
+        count += cart[i].quantity;
+      }
+      document.getElementById('cartCount').textContent = count > 0 ? count : '';
+    }
+    
+    function showCart() {
+      var modal = document.getElementById('modal1');
+      var html = '<div class="modal-content" style="padding:2rem;max-width:600px;" onclick="event.stopPropagation()">';
+      html += '<button class="close-btn" onclick="closeModal1()">×</button>';
+      html += '<h2>Cart</h2>';
+      if(cart.length === 0) {
+        html += '<p>Empty</p>';
+      } else {
+        var total = 0;
+        for(var i = 0; i < cart.length; i++) {
+          var item = cart[i];
+          total += item.price * item.quantity;
+          html += '<div style="display:flex;gap:1rem;margin:1rem 0;padding:1rem;background:#f5f5f4;border-radius:0.5rem;">';
+          html += '<img src="' + item.url + '" style="width:80px;height:80px;object-fit:cover;border-radius:0.5rem;">';
+          html += '<div><h4>' + item.title + '</h4><p>$' + item.price + ' x ' + item.quantity + '</p></div>';
+          html += '</div>';
+        }
+        html += '<div style="border-top:1px solid #e7e5e4;padding-top:1rem;margin-top:1rem;">';
+        html += '<p style="font-size:1.25rem;font-weight:600;">Total: $' + total + '</p>';
+        html += '<button class="btn btn-primary" style="width:100%;margin-top:1rem;" onclick="alert(\'Checkout coming soon\')">Checkout</button>';
+        html += '</div>';
+      }
+      html += '</div>';
+      modal.innerHTML = html;
+      modal.classList.add('active');
+      modal.onclick = function(e) { if(e.target === modal) closeModal1(); };
+    }
+    
+    document.addEventListener('contextmenu', function(e) { e.preventDefault(); });
+    document.addEventListener('keydown', function(e) {
+      if((e.ctrlKey || e.metaKey) && e.key === 's') e.preventDefault();
+      if(e.key === 'F12') e.preventDefault();
+    });
+    
+    render();
+  </script>
+</body>
+</html> + p.price + '</span>';
+        html += '</div></div></div>';
       }
       document.getElementById('gallery').innerHTML = html || '<p>No photos yet</p>';
     }
